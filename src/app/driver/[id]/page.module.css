@@ -1,0 +1,147 @@
+.container {
+  padding: 16px;
+  padding-bottom: 80px;
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.backBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-family: var(--font-outfit);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.profileHero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background-color: var(--accent-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-glow);
+}
+
+.name {
+  font-family: var(--font-outfit);
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.statsRow {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.statBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background-color: var(--bg-card);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-family: var(--font-outfit);
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.badgeList {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 8px;
+}
+.badgeList::-webkit-scrollbar { display: none; }
+
+.badgeItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 72px;
+}
+
+.badgeIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lapList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lapCard {
+  background-color: var(--bg-card);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.lapHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.lapTime {
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--success);
+}

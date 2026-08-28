@@ -1,0 +1,153 @@
+@import 'leaflet/dist/leaflet.css';
+
+:root {
+  /* Racing Brand Colors */
+  --bg-primary: #121212;
+  --bg-secondary: #1E1E24;
+  --bg-card: #2A2A35;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0B0;
+  
+  --accent-primary: #FF2A2A; /* Racing Red */
+  --accent-hover: #D01C1C;
+  --accent-secondary: #00E5FF; /* Neon Cyan for techy contrast */
+  
+  --success: #00E676;
+  --warning: #FFC400;
+  --error: #FF1744;
+
+  --border: #333344;
+  --border-light: #444455;
+  
+  /* Layout */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+  
+  --shadow-glow: 0 0 20px rgba(255, 42, 42, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: #050505; /* Dark background outside the app */
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  color: var(--text-primary);
+}
+
+/* Utilities */
+.container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  position: relative;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 1);
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--accent-primary), #FF8000);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.btn-primary {
+  background-color: var(--accent-primary);
+  color: white;
+  padding: 14px 24px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: white;
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  border: 2px solid var(--border-light);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.card {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+/* Layout spacing */
+.section {
+  padding: 40px 0;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  letter-spacing: -0.5px;
+}

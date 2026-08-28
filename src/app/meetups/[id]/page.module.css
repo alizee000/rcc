@@ -1,0 +1,145 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  padding-bottom: 100px;
+}
+
+.header {
+  position: relative;
+  height: 250px;
+}
+
+.backBtn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(18, 18, 18, 0.7);
+  backdrop-filter: blur(4px);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.heroImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content {
+  padding: 24px 16px;
+  margin-top: -30px;
+  background-color: var(--bg-primary);
+  border-radius: 24px 24px 0 0;
+  position: relative;
+  z-index: 5;
+}
+
+.title {
+  font-family: var(--font-outfit);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.hostSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+
+.avatarLarge {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: white;
+}
+
+.detailsCard {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.detailRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.description {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.playersList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.playerItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--bg-card);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+}
+
+.playerAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+}
+
+.footer {
+  position: fixed;
+  bottom: 65px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  padding: 16px;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--border);
+  z-index: 50;
+}

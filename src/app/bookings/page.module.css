@@ -1,0 +1,187 @@
+.container {
+  padding: 16px;
+  padding-bottom: 80px;
+  min-height: 100vh;
+}
+
+.title {
+  font-family: var(--font-outfit);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  padding: 8px 0;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+}
+
+.tabActive {
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.bookingCard {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.statusIndicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.statusConfirmed {
+  background-color: var(--success);
+}
+
+.statusPending {
+  background-color: var(--warning);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.venueName {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.statusText {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.textConfirmed { color: var(--success); }
+.textPending { color: var(--warning); }
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.detailRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  border-top: 1px dashed var(--border);
+  padding-top: 16px;
+}
+
+/* Digital Pass Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.passCard {
+  background: var(--bg-card);
+  width: 100%;
+  max-width: 350px;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+.passHeader {
+  background: var(--accent-primary);
+  padding: 24px;
+  text-align: center;
+  color: white;
+}
+
+.passTitle {
+  font-family: var(--font-outfit);
+  font-weight: 900;
+  font-size: 24px;
+  letter-spacing: 1px;
+}
+
+.passContent {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.qrWrapper {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.passInfo {
+  width: 100%;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.infoLabel {
+  color: var(--text-secondary);
+}
+
+.infoValue {
+  font-weight: 700;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: white;
+}

@@ -1,0 +1,149 @@
+.header {
+  height: 60px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background-color: var(--bg-primary);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-family: var(--font-outfit);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoutBtn {
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.main {
+  padding: 16px;
+  padding-bottom: 80px; /* Space for bottom nav */
+  flex: 1;
+}
+
+/* Common Admin UI elements */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+}
+
+.pageTitle {
+  font-family: var(--font-outfit);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.pageSubtitle {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statLabel {
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.statValue {
+  font-size: 32px;
+  font-weight: 700;
+  font-family: var(--font-outfit);
+}
+
+/* Mobile List Cards instead of Tables */
+.listCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.listHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-weight: 700;
+}
+
+.listContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.listFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badgeSuccess { background: rgba(0, 230, 118, 0.1); color: var(--success); }
+.badgeWarning { background: rgba(255, 196, 0, 0.1); color: var(--warning); }
+.badgeError { background: rgba(255, 23, 68, 0.1); color: var(--error); }

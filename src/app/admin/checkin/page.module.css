@@ -1,0 +1,123 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.scannerCard {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.scannerViewport {
+  width: 250px;
+  height: 250px;
+  border: 4px dashed var(--accent-primary);
+  border-radius: 16px;
+  margin: 0 auto 24px auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.scanLine {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: var(--accent-primary);
+  box-shadow: 0 0 10px var(--accent-primary);
+  animation: scan 2s linear infinite;
+}
+
+@keyframes scan {
+  0% { top: 0; }
+  50% { top: 100%; }
+  100% { top: 0; }
+}
+
+.orDivider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.orDivider::before,
+.orDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--border);
+}
+
+.orDivider::before { margin-right: 16px; }
+.orDivider::after { margin-left: 16px; }
+
+.inputGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.inputGroup input {
+  flex: 1;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: white;
+  text-align: center;
+  font-family: monospace;
+  font-size: 16px;
+}
+
+/* Success Modal */
+.successModal {
+  background-color: var(--bg-card);
+  border: 1px solid var(--success);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  width: 100%;
+  text-align: center;
+  animation: popIn 0.3s ease-out forwards;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.detailsList {
+  text-align: left;
+  background-color: var(--bg-secondary);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.detailLabel {
+  color: var(--text-secondary);
+}
+
+.detailValue {
+  font-weight: 700;
+}
