@@ -4,22 +4,12 @@ import { useState } from "react";
 import { Calendar, Clock, MapPin, QrCode, X } from "lucide-react";
 import styles from "../app/bookings/page.module.css";
 
-export default function BookingsList({ user, venues }: { user: any, venues: any[] }) {
+export default function BookingsList({ user, bookings = [] }: { user: any, bookings?: any[] }) {
   const [activeTab, setActiveTab] = useState("UPCOMING");
   const [showPass, setShowPass] = useState<any>(null);
 
-  // Mock booking data
-  const mockBookings = [
-    {
-      id: "RCR-84291",
-      venue: venues[0] || { name: "Bengaluru RC Raceway" },
-      experience: "Pro Race",
-      date: new Date().toLocaleDateString(),
-      time: "18:00 - 19:00",
-      status: "CONFIRMED",
-      players: 1,
-    }
-  ];
+  // If there are no bookings, fallback to an empty array
+  const displayBookings = bookings.length > 0 ? bookings : [];
 
   return (
     <div className={styles.container}>
@@ -42,12 +32,12 @@ export default function BookingsList({ user, venues }: { user: any, venues: any[
 
       {activeTab === "UPCOMING" && (
         <div>
-          {mockBookings.map((b) => (
+          {displayBookings.map((b) => (
             <div key={b.id} className={styles.bookingCard}>
               <div className={`${styles.statusIndicator} ${b.status === "CONFIRMED" ? styles.statusConfirmed : styles.statusPending}`}></div>
               
               <div className={styles.header}>
-                <div className={styles.venueName}>{b.venue.name}</div>
+                <div className={styles.venueName}>{b.venue?.name || "Bengaluru RC Raceway"}</div>
                 <div className={`${styles.statusText} ${b.status === "CONFIRMED" ? styles.textConfirmed : styles.textPending}`}>
                   {b.status}
                 </div>
@@ -55,13 +45,13 @@ export default function BookingsList({ user, venues }: { user: any, venues: any[
               
               <div className={styles.details}>
                 <div className={styles.detailRow}>
-                  <Calendar size={14} /> {b.date}
+                  <Calendar size={14} /> {typeof b.date === 'number' ? new Date(b.date).toLocaleDateString() : b.date}
                 </div>
                 <div className={styles.detailRow}>
-                  <Clock size={14} /> {b.time} ({b.experience})
+                  <Clock size={14} /> {b.time || '18:00 - 19:00'} ({typeof b.experience === 'string' ? b.experience : b.experience?.name || 'RC Experience'})
                 </div>
                 <div className={styles.detailRow}>
-                  <MapPin size={14} /> {b.venue.city || "Bengaluru"}
+                  <MapPin size={14} /> {b.venue?.city || "Bengaluru"}
                 </div>
               </div>
               
@@ -118,11 +108,11 @@ export default function BookingsList({ user, venues }: { user: any, venues: any[
                 </div>
                 <div className={styles.infoRow}>
                   <span className={styles.infoLabel}>Experience</span>
-                  <span className={styles.infoValue}>{showPass.experience}</span>
+                  <span className={styles.infoValue}>{typeof showPass.experience === 'string' ? showPass.experience : showPass.experience?.name || 'RC Experience'}</span>
                 </div>
                 <div className={styles.infoRow}>
                   <span className={styles.infoLabel}>Time</span>
-                  <span className={styles.infoValue}>{showPass.time}</span>
+                  <span className={styles.infoValue}>{showPass.time || '18:00 - 19:00'}</span>
                 </div>
               </div>
             </div>
