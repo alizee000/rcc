@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
 
 export const getMeetups = query({
   args: {},
@@ -9,7 +10,7 @@ export const getMeetups = query({
     // Fetch related data for each meetup
     const meetupsWithRelations = await Promise.all(
       meetups.map(async (meetup) => {
-        const host = await ctx.db.get(meetup.hostId);
+        const host = null; // Clerk user, we don't fetch from Convex DB
         const venue = await ctx.db.get(meetup.venueId);
         const participants = await ctx.db
           .query("meetupParticipants")
@@ -19,7 +20,7 @@ export const getMeetups = query({
         return {
           ...meetup,
           id: meetup._id,
-          host: host ? { id: host._id, name: host.name } : null,
+          host: { id: meetup.hostId, name: "Host Player" }, // Mock host for now
           venue: venue ? { id: venue._id, name: venue.name, city: venue.city, imageUrl: venue.imageUrl } : null,
           participants: participants.map(p => ({ userId: p.userId, status: p.status })),
         };
@@ -36,7 +37,7 @@ export const getMeetupById = query({
     const meetup = await ctx.db.get(args.id);
     if (!meetup) return null;
 
-    const host = await ctx.db.get(meetup.hostId);
+    const host = null;
     const venue = await ctx.db.get(meetup.venueId);
     
     const participantDocs = await ctx.db
@@ -46,11 +47,11 @@ export const getMeetupById = query({
 
     const participants = await Promise.all(
       participantDocs.map(async (p) => {
-        const user = await ctx.db.get(p.userId);
+        const user = null;
         return {
           ...p,
           id: p._id,
-          user: user ? { id: user._id, name: user.name } : null,
+          user: { id: p.userId, name: "Racer", email: "" },
         };
       })
     );
@@ -58,8 +59,8 @@ export const getMeetupById = query({
     return {
       ...meetup,
       id: meetup._id,
-      host: host ? { id: host._id, name: host.name } : null,
-      venue: venue ? { id: venue._id, name: venue.name, city: venue.city, imageUrl: venue.imageUrl } : null,
+      host: { id: meetup.hostId, name: "Host Player", email: "" },
+      venue: venue ? { id: venue._id, name: venue.name, city: venue.city, imageUrl: venue.imageUrl, address: venue.address } : null,
       participants,
     };
   },
@@ -74,8 +75,8 @@ export const createMeetup = mutation({
     time: v.string(),
     maxPlayers: v.number(),
     skillLevel: v.string(),
-    hostId: v.id("users"), // We will pass this from the client session
-    invitedUserIds: v.array(v.id("users")),
+    hostId: v.string(), // We will pass this from the client session
+    invitedUserIds: v.array(v.string()),
   },
   handler: async (ctx, args) => {
     const meetupId = await ctx.db.insert("meetups", {
@@ -116,7 +117,7 @@ export const createMeetup = mutation({
 export const joinMeetup = mutation({
   args: { 
     meetupId: v.id("meetups"),
-    userId: v.id("users"),
+    userId: v.string(),
   },
   handler: async (ctx, args) => {
     const participant = await ctx.db
@@ -130,7 +131,56 @@ export const joinMeetup = mutation({
       await ctx.db.insert("meetupParticipants", {
         meetupId: args.meetupId,
         userId: args.userId,
-        status: "JOINED",
+        status: "PENDING",
+        joinedAt: Date.now(),
+      });
+    }
+
+    return { success: true };
+  },
+});
+
+export const approveJoinRequest = mutation({
+  args: {
+    participantId: v.id("meetupParticipants"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.participantId, { status: "JOINED" });
+    return { success: true };
+  },
+});
+
+export const declineJoinRequest = mutation({
+  args: {
+    participantId: v.id("meetupParticipants"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.participantId, { status: "DECLINED" });
+    return { success: true };
+  },
+});
+
+export const inviteToMeetup = mutation({
+  args: {
+    meetupId: v.id("meetups"),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Check if participant already exists
+    const existing = await ctx.db
+      .query("meetupParticipants")
+      .withIndex("by_meetup_user", (q) => q.eq("meetupId", args.meetupId).eq("userId", args.userId))
+      .first();
+
+    if (existing) {
+      if (existing.status !== "INVITED" && existing.status !== "JOINED") {
+        await ctx.db.patch(existing._id, { status: "INVITED" });
+      }
+    } else {
+      await ctx.db.insert("meetupParticipants", {
+        meetupId: args.meetupId,
+        userId: args.userId,
+        status: "INVITED",
         joinedAt: Date.now(),
       });
     }

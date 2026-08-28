@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
 
 export const getBookings = query({
   args: {},
@@ -21,12 +22,36 @@ export const getBookings = query({
   },
 });
 
+export const getUserBookings = query({
+  args: { userId: v.string() },
+  handler: async (ctx, args) => {
+    const bookings = await ctx.db
+      .query("bookings")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .collect();
+    
+    return await Promise.all(
+      bookings.map(async (b) => {
+        const venue = await ctx.db.get(b.venueId);
+        const experience = await ctx.db.get(b.experienceId);
+        return {
+          ...b,
+          id: b._id,
+          venue: venue ? { name: venue.name, imageUrl: venue.imageUrl } : null,
+          experience: experience ? { name: experience.name } : null,
+        };
+      })
+    );
+  },
+});
+
 export const createBooking = mutation({
   args: {
-    userId: v.id("users"),
+    userId: v.string(),
     venueId: v.id("venues"),
     experienceId: v.id("experiences"),
-    slotId: v.id("availabilitySlots"),
+    slotId: v.string(),
     date: v.string(), // ISO String
     totalPrice: v.number(),
     players: v.array(
@@ -43,7 +68,7 @@ export const createBooking = mutation({
       userId: args.userId,
       venueId: args.venueId,
       experienceId: args.experienceId,
-      slotId: args.slotId,
+      slotId: args.slotId as any,
       date: args.date,
       status: "CONFIRMED",
       totalPrice: args.totalPrice,
@@ -59,11 +84,14 @@ export const createBooking = mutation({
       });
     }
 
-    const slot = await ctx.db.get(args.slotId);
-    if (slot) {
-      await ctx.db.patch(args.slotId, {
-        bookedCount: slot.bookedCount + args.players.length,
-      });
+    if (!args.slotId.startsWith("mock-")) {
+      const slotId = args.slotId as Id<"availabilitySlots">;
+      const slot = await ctx.db.get(slotId);
+      if (slot) {
+        await ctx.db.patch(slotId, {
+          bookedCount: slot.bookedCount + args.players.length,
+        });
+      }
     }
 
     return { id: bookingId, qrCode };

@@ -7,17 +7,10 @@ import { useSearchParams } from "next/navigation";
 import { MapPin, Navigation, Star, Filter } from "lucide-react";
 import styles from "../app/explore/page.module.css";
 
-// Dynamic import of Map to prevent SSR issues with Leaflet
-const MapComponent = dynamic(() => import("./MapComponent"), {
-  ssr: false,
-  loading: () => <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading map...</div>
-});
-
 export default function ExploreView({ venues }: { venues: any[] }) {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category");
 
-  const [view, setView] = useState<"LIST" | "MAP">("LIST");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   useEffect(() => {
@@ -73,21 +66,6 @@ export default function ExploreView({ venues }: { venues: any[] }) {
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.title}>Explore Tracks</h1>
-        
-        <div className={styles.toggleContainer}>
-          <button 
-            className={`${styles.toggleBtn} ${view === "LIST" ? styles.active : ""}`}
-            onClick={() => setView("LIST")}
-          >
-            LIST
-          </button>
-          <button 
-            className={`${styles.toggleBtn} ${view === "MAP" ? styles.active : ""}`}
-            onClick={() => setView("MAP")}
-          >
-            MAP
-          </button>
-        </div>
 
         <div className={styles.filters}>
           <div style={{ display: "flex", alignItems: "center", paddingRight: 8, color: "var(--text-secondary)" }}>
@@ -106,54 +84,48 @@ export default function ExploreView({ venues }: { venues: any[] }) {
       </header>
 
       <div className={styles.contentArea}>
-        {view === "LIST" ? (
-          <div className={styles.listView}>
-            {filteredVenues.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--text-secondary)" }}>
-                No venues found matching your filters.
-              </div>
-            ) : (
-              filteredVenues.map((venue) => (
-                <div key={venue.id} className={styles.venueCard}>
-                  <Link href={`/venues/${venue.id}`} style={{ display: "block", cursor: "pointer" }}>
-                    <img src={venue.imageUrl} alt={venue.name} className={styles.venueImg} />
-                  </Link>
+        <div className={styles.listView}>
+          {filteredVenues.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--text-secondary)" }}>
+              No venues found matching your filters.
+            </div>
+          ) : (
+            filteredVenues.map((venue) => (
+              <div key={venue.id} className={styles.venueCard}>
+                <Link href={`/venues/${venue.id}`} style={{ display: "block", cursor: "pointer" }}>
+                  <img src={venue.imageUrl} alt={venue.name} className={styles.venueImg} />
+                </Link>
+                
+                <div className={styles.venueInfo}>
+                  <div className={styles.venueHeader}>
+                    <h3 className={styles.venueName}>{venue.name}</h3>
+                    <div className={styles.venueRating}>
+                      <Star size={14} fill="currentColor" />
+                      {venue.rating}
+                    </div>
+                  </div>
                   
-                  <div className={styles.venueInfo}>
-                    <div className={styles.venueHeader}>
-                      <h3 className={styles.venueName}>{venue.name}</h3>
-                      <div className={styles.venueRating}>
-                        <Star size={14} fill="currentColor" />
-                        {venue.rating}
-                      </div>
-                    </div>
-                    
-                    <div className={styles.venueDetails}>
-                      <span><Navigation size={14} /> 5.2 km</span>
-                      <span><MapPin size={14} /> {venue.city}</span>
-                      {venue.tracks?.length > 0 && (
-                        <span>• {venue.tracks[0]?.indoorOutdoor}</span>
-                      )}
-                    </div>
-                    
-                    <div className={styles.venueFooter}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div className={styles.priceLabel}>Starting from</div>
-                        <div className={styles.priceValue}>
-                          ₹{venue.experiences?.length > 0 ? Math.min(...venue.experiences.map((e: any) => e.price)) : 0}
-                        </div>
+                  <div className={styles.venueDetails}>
+                    <span><Navigation size={14} /> 5.2 km</span>
+                    <span><MapPin size={14} /> {venue.city}</span>
+                    {venue.tracks?.length > 0 && (
+                      <span>• {venue.tracks[0]?.indoorOutdoor}</span>
+                    )}
+                  </div>
+                  
+                  <div className={styles.venueFooter}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div className={styles.priceLabel}>Starting from</div>
+                      <div className={styles.priceValue}>
+                        ₹{venue.experiences?.length > 0 ? Math.min(...venue.experiences.map((e: any) => e.price)) : 0}
                       </div>
                     </div>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        ) : (
-          <div className={styles.mapView}>
-            <MapComponent venues={filteredVenues} />
-          </div>
-        )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

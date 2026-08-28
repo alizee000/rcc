@@ -1,10 +1,14 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { currentUser } from "@clerk/nextjs/server";
 import { Gift, Award, Star, Zap } from "lucide-react";
-import styles from "../page.module.css";
+import { redirect } from "next/navigation";
+import styles from "../home/page.module.css";
 
 export default async function RewardsPage() {
-  const session = await getServerSession(authOptions);
+  const user = await currentUser();
+
+  if (!user) {
+    redirect("/");
+  }
 
   return (
     <div style={{ padding: "24px 16px" }}>

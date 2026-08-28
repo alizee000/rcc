@@ -1,5 +1,4 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import styles from "./layout.module.css";
 import Link from "next/link";
@@ -8,7 +7,11 @@ import { QrCode, ArrowRight } from "lucide-react";
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
-  const session = await getServerSession(authOptions);
+  const user = await currentUser();
+
+  if (!user) {
+    redirect("/");
+  }
 
   // In MVP we assume the venue partner is looking at Venue 1 (Bengaluru)
   const venueId = "venue-1"; // Matching seeded ID

@@ -1,36 +1,50 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { getServerSession } from "next-auth";
+import { notFound, redirect } from "next/navigation";
+import { currentUser } from "@clerk/nextjs/server";
 import { ArrowLeft, Calendar, Clock, MapPin, Trophy, Users, CheckCircle2 } from "lucide-react";
-import prisma from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { fetchQuery } from "convex/nextjs";
+// @ts-ignore
+import { api } from "../../../../convex/_generated/api";
+// @ts-ignore
+import { Id } from "../../../../convex/_generated/dataModel";
+
 import styles from "./page.module.css";
 import JoinMeetupButton from "@/components/JoinMeetupButton";
+import ManageRequestButtons from "@/components/ManageRequestButtons";
+import InvitePlayersAction from "@/components/InvitePlayersAction";
+
+export const dynamic = 'force-dynamic';
 
 export default async function MeetupDetail(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
-  const session = await getServerSession(authOptions);
+  const user = await currentUser();
 
-  const meetup = await prisma.meetup.findUnique({
-    where: { id: params.id },
-    include: {
-      host: { select: { id: true, name: true, email: true } },
-      venue: { select: { id: true, name: true, address: true, imageUrl: true } },
-      participants: { 
-        include: { user: { select: { id: true, name: true } } }
-      }
-    }
-  });
+  if (!user) {
+    redirect("/");
+  }
+
+  let meetup;
+  try {
+    meetup = await fetchQuery(api.meetups.getMeetupById, { id: params.id as Id<"meetups"> });
+  } catch (e) {
+    return notFound();
+  }
 
   if (!meetup) {
     notFound();
   }
 
-  const currentUser = session?.user;
-  const currentParticipant = meetup.participants.find(p => p.user.email === currentUser?.email);
-  const userStatus = currentParticipant ? currentParticipant.status : null;
-  const joinedParticipants = meetup.participants.filter(p => p.status === "JOINED");
-  const invitedParticipants = meetup.participants.filter(p => p.status === "INVITED");
+  const currentUserData = {
+    id: user.id,
+    email: user.emailAddresses[0]?.emailAddress
+  };
+
+  const isHost = meetup.host.id === currentUserData.id;
+  const userParticipant = meetup.participants.find((p: any) => p.user.id === currentUserData.id);
+  const userStatus = userParticipant ? userParticipant.status : null;
+  const joinedParticipants = meetup.participants.filter((p: any) => p.status === "JOINED");
+  const invitedParticipants = meetup.participants.filter((p: any) => p.status === "INVITED");
+  const pendingParticipants = meetup.participants.filter((p: any) => p.status === "PENDING");
   const isFull = joinedParticipants.length >= meetup.maxPlayers;
 
   return (
@@ -101,13 +115,32 @@ export default async function MeetupDetail(props: { params: Promise<{ id: string
                   <div style={{ fontWeight: 600 }}>{p.user.name}</div>
                   {p.user.id === meetup.host.id && <div style={{ fontSize: 12, color: "var(--accent-primary)" }}>Host</div>}
                 </div>
-                {p.user.email === currentUser?.email && (
+                {p.user.id === currentUserData.id && (
                   <div style={{ marginLeft: "auto", color: "var(--success)" }}><CheckCircle2 size={20} /></div>
                 )}
               </div>
             ))}
           </div>
         </div>
+
+        {isHost && pendingParticipants.length > 0 && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Pending Requests</h2>
+            <div className={styles.playersList}>
+              {pendingParticipants.map((p: any) => (
+                <div key={p.id} className={styles.playerItem}>
+                  <div className={styles.playerAvatar} style={{ backgroundColor: "var(--warning)" }}>
+                    {p.user.name.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600 }}>{p.user.name}</div>
+                  </div>
+                  <ManageRequestButtons participantId={p.id} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {invitedParticipants.length > 0 && (
           <div className={styles.section}>
@@ -126,11 +159,20 @@ export default async function MeetupDetail(props: { params: Promise<{ id: string
             </div>
           </div>
         )}
+
+        {isHost && (
+          <div className={styles.section}>
+            <InvitePlayersAction 
+              meetupId={meetup.id} 
+              currentParticipants={meetup.participants.map((p: any) => p.user.id)} 
+            />
+          </div>
+        )}
       </div>
 
       <div className={styles.footer}>
-        {currentUser?.email !== meetup.host.email && (
-          <JoinMeetupButton meetupId={meetup.id} initialStatus={userStatus} isFull={isFull} />
+        {!isHost && (
+          <JoinMeetupButton meetupId={meetup.id} initialStatus={userStatus} isFull={isFull} userId={currentUserData.id} />
         )}
       </div>
     </div>

@@ -1,20 +1,18 @@
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { currentUser } from "@clerk/nextjs/server";
 import AdminBottomNav from "@/components/AdminBottomNav";
 import styles from "./layout.module.css";
-import { LogOut } from "lucide-react";
-import Link from "next/link";
+import { SignOutButton } from "@/components/SignOutButton";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  const user = await currentUser();
 
-  if (!session) {
-    redirect("/login");
+  if (!user) {
+    redirect("/");
   }
 
   return (
@@ -24,11 +22,9 @@ export default async function AdminLayout({
           <span className="text-gradient">RC RUSH</span> Admin
         </div>
         <div className={styles.profile}>
-          <Link href="/api/auth/signout" className={styles.logoutBtn}>
-            <LogOut size={18} />
-          </Link>
+          <SignOutButton className={styles.logoutBtn} showText={false} style={{ display: "flex" }} />
           <div className={styles.avatar}>
-            {session.user?.name?.charAt(0) || "U"}
+            {user.firstName?.charAt(0) || user.emailAddresses?.[0]?.emailAddress?.charAt(0)?.toUpperCase() || "U"}
           </div>
         </div>
       </header>

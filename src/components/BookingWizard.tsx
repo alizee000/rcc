@@ -4,6 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, Check, QrCode, CheckCircle2 } from "lucide-react";
+import { useMutation } from "convex/react";
+// @ts-ignore
+import { api } from "../../convex/_generated/api";
 import styles from "../app/book/[id]/page.module.css";
 
 interface Props {
@@ -32,25 +35,23 @@ export default function BookingWizard({ venue, user }: Props) {
   const handleNext = () => setStep((s) => Math.min(s + 1, 6));
   const handlePrev = () => setStep((s) => Math.max(s - 1, 1));
 
+  const createBooking = useMutation(api.bookings.createBooking);
+
   const handleBook = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          venueId: venue.id,
-          experienceId: selectedExp.id,
-          slotId: selectedSlot.id,
-          date: selectedDate,
-          carId: selectedCar.id,
-          players,
-          totalPrice: selectedExp.price
-        })
+      const data = await createBooking({
+        userId: user.id as any,
+        venueId: venue.id,
+        experienceId: selectedExp.id,
+        slotId: selectedSlot.id,
+        date: selectedDate.toISOString(),
+        totalPrice: selectedExp.price,
+        players: players.map(p => ({
+          name: p.name,
+          age: parseInt(p.age as string) || 18
+        }))
       });
-      
-      if (!res.ok) throw new Error("Booking failed");
-      const data = await res.json();
       
       // Simulate payment delay
       setTimeout(() => {
@@ -227,7 +228,13 @@ export default function BookingWizard({ venue, user }: Props) {
             </div>
             
             <div className={styles.slotsGrid}>
-              {venue.slots.filter((s: any) => new Date(s.date).toDateString() === selectedDate.toDateString()).map((slot: any) => {
+              {venue.slots.filter((s: any) => {
+                const year = selectedDate.getFullYear();
+                const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                const day = String(selectedDate.getDate()).padStart(2, '0');
+                const selectedDateStr = `${year}-${month}-${day}`;
+                return s.date === selectedDateStr;
+              }).map((slot: any) => {
                 const isFull = slot.bookedCount >= slot.capacity;
                 const isSelected = selectedSlot?.id === slot.id;
                 

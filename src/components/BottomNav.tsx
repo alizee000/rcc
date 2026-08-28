@@ -8,8 +8,10 @@ import styles from './BottomNav.module.css';
 export default function BottomNav() {
   const pathname = usePathname();
 
+  if (pathname === '/') return null;
+
   const navItems = [
-    { name: 'Home', path: '/', icon: Home },
+    { name: 'Home', path: '/home', icon: Home },
     { name: 'Leaderboard', path: '/leaderboards', icon: Trophy },
     { name: 'Bookings', path: '/bookings', icon: Calendar },
     { name: 'Meetups', path: '/meetups', icon: Users },

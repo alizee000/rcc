@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, CalendarDays, Car, Map, QrCode, LogOut } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { useClerk } from "@clerk/nextjs";
 import styles from "../app/admin/layout.module.css";
 
 const navItems = [
@@ -16,6 +16,7 @@ const navItems = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const { signOut } = useClerk();
 
   return (
     <aside className={styles.sidebar}>
@@ -45,8 +46,8 @@ export default function AdminSidebar() {
       <div style={{ padding: "0 24px", marginTop: "auto" }}>
         <button 
           className={styles.navItem} 
-          style={{ width: "100%", padding: "12px 0", color: "var(--error)" }}
-          onClick={() => signOut({ callbackUrl: "/login" })}
+          style={{ width: "100%", padding: "12px 0", color: "var(--error)", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
+          onClick={() => signOut({ redirectUrl: "/" })}
         >
           <LogOut size={20} />
           Sign Out

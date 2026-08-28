@@ -59,12 +59,18 @@ export const getVenueById = query({
       .withIndex("by_venue", (q) => q.eq("venueId", venue._id))
       .collect();
 
+    const slots = await ctx.db
+      .query("availabilitySlots")
+      .withIndex("by_venue_date", (q) => q.eq("venueId", venue._id))
+      .collect();
+
     return {
       ...venue,
       id: venue._id,
       experiences: experiences.map(e => ({ ...e, id: e._id })),
       cars: cars.map(c => ({ ...c, id: c._id })),
       tracks: tracks.map(t => ({ ...t, id: t._id })),
+      slots: slots.map(s => ({ ...s, id: s._id })),
     };
   }
 });

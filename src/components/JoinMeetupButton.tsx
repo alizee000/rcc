@@ -3,24 +3,31 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function JoinMeetupButton({ meetupId, initialStatus, isFull }: { meetupId: string, initialStatus: string | null, isFull: boolean }) {
+import { useMutation } from "convex/react";
+// @ts-ignore
+import { api } from "../../convex/_generated/api";
+
+export default function JoinMeetupButton({ meetupId, initialStatus, isFull, userId }: { meetupId: string, initialStatus: string | null, isFull: boolean, userId: string }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const joinMeetup = useMutation(api.meetups.joinMeetup);
 
   const handleJoin = async () => {
+    if (!userId) {
+      alert("Please log in to join.");
+      return;
+    }
+    
     setLoading(true);
     try {
-      const res = await fetch(`/api/meetups/${meetupId}/join`, {
-        method: "POST"
+      await joinMeetup({
+        meetupId: meetupId as any,
+        userId: userId as any
       });
-      if (res.ok) {
-        router.refresh();
-      } else {
-        const data = await res.json();
-        alert(data.error || "Failed to join meetup");
-      }
-    } catch (error) {
+      router.refresh();
+    } catch (error: any) {
       console.error(error);
+      alert(error.message || "Failed to join meetup");
     }
     setLoading(false);
   };
@@ -29,6 +36,14 @@ export default function JoinMeetupButton({ meetupId, initialStatus, isFull }: { 
     return (
       <button className="btn-secondary" disabled style={{ width: "100%", backgroundColor: "var(--success)", color: "white", borderColor: "var(--success)" }}>
         You're In!
+      </button>
+    );
+  }
+
+  if (initialStatus === "PENDING") {
+    return (
+      <button className="btn-secondary" disabled style={{ width: "100%" }}>
+        Requested
       </button>
     );
   }

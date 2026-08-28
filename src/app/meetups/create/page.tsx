@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
+import { useUser } from "@clerk/nextjs";
 // @ts-ignore
 import { api } from "../../../../convex/_generated/api";
 import styles from "./page.module.css";
@@ -13,6 +14,7 @@ export default function CreateMeetup() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const { user } = useUser();
   
   // Use Convex queries
   const venues = useQuery(api.venues.getVenues) || [];
@@ -72,10 +74,8 @@ export default function CreateMeetup() {
         }
       }
 
-      // Use the first user as the host for MVP
-      const host = users[0];
-      if (!host) {
-        alert("No users found to host the meetup.");
+      if (!user) {
+        alert("You must be logged in to host a meetup.");
         setLoading(false);
         return;
       }
@@ -88,7 +88,7 @@ export default function CreateMeetup() {
         time: finalTime,
         maxPlayers: formData.maxPlayers,
         skillLevel: formData.skillLevel,
-        hostId: host._id,
+        hostId: user.id,
         invitedUserIds: formData.invitedUserIds as any[],
       });
       

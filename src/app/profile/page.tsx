@@ -1,15 +1,15 @@
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { currentUser } from "@clerk/nextjs/server";
+
 import Link from "next/link";
-import { User, Settings, Shield, LogOut, ChevronRight, History } from "lucide-react";
-import styles from "../page.module.css";
+import { User, Settings, Shield, ChevronRight, History } from "lucide-react";
+import { SignOutButton } from "@/components/SignOutButton";
+import styles from "../home/page.module.css";
 
 export default async function ProfilePage() {
-  const session = await getServerSession(authOptions);
+  const user = await currentUser();
 
-  if (!session) {
-    redirect("/login");
+  if (!user) {
+    redirect("/");
   }
 
   return (
@@ -28,10 +28,10 @@ export default async function ProfilePage() {
           fontWeight: 800,
           color: "white"
         }}>
-          {session.user?.name?.charAt(0) || "U"}
+          {user.firstName?.charAt(0) || user.emailAddresses?.[0]?.emailAddress?.charAt(0)?.toUpperCase() || "U"}
         </div>
-        <h1 className={styles.heroTitle} style={{ fontSize: 24, marginBottom: 4 }}>{session.user?.name}</h1>
-        <p style={{ color: "var(--text-secondary)" }}>{session.user?.email}</p>
+        <h1 className={styles.heroTitle} style={{ fontSize: 24, marginBottom: 4 }}>{user.fullName || user.firstName}</h1>
+        <p style={{ color: "var(--text-secondary)" }}>{user.emailAddresses?.[0]?.emailAddress}</p>
       </header>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -61,10 +61,7 @@ export default async function ProfilePage() {
           <ChevronRight size={20} color="var(--accent-primary)" />
         </Link>
 
-        <Link href="/api/auth/signout" className={styles.card} style={{ display: "flex", alignItems: "center", gap: 16, padding: "16px 20px", marginTop: 24 }}>
-          <LogOut size={20} color="var(--error)" />
-          <div style={{ flex: 1, fontWeight: 600, color: "var(--error)" }}>Sign Out</div>
-        </Link>
+        <SignOutButton className={styles.card} style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 24, width: "100%" }} />
       </div>
     </div>
   );

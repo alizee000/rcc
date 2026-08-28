@@ -14,14 +14,14 @@ export const getLeaderboards = query({
     
     return await Promise.all(
       top10.map(async (lap) => {
-        const user = await ctx.db.get(lap.userId);
+        const user = null; // We don't fetch Clerk users from DB
         const car = lap.carId ? await ctx.db.get(lap.carId) : null;
         const track = await ctx.db.get(lap.trackId);
         
         return {
           ...lap,
           id: lap._id,
-          user: user ? { id: user._id, name: user.name } : null,
+          user: { id: lap.userId, name: "Racer" },
           car: car ? { name: car.name } : null,
           track: track ? { name: track.name } : null,
         };

@@ -1,7 +1,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   padding-bottom: 70px;
 }
 
@@ -80,7 +80,6 @@
 .contentArea {
   flex: 1;
   position: relative;
-  overflow: hidden;
 }
 
 .listView {
@@ -88,8 +87,6 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  overflow-y: auto;
-  height: 100%;
 }
 
 .mapView {

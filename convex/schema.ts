@@ -3,6 +3,7 @@ import { v } from "convex/values";
 
 export default defineSchema({
   users: defineTable({
+    clerkId: v.optional(v.string()),
     name: v.optional(v.string()),
     email: v.optional(v.string()),
     phone: v.optional(v.string()),
@@ -70,10 +71,10 @@ export default defineSchema({
   }).index("by_venue_date", ["venueId", "date"]),
 
   bookings: defineTable({
-    userId: v.id("users"),
+    userId: v.string(),
     venueId: v.id("venues"),
     experienceId: v.id("experiences"),
-    slotId: v.id("availabilitySlots"),
+    slotId: v.string(), // Allowing string to support mock slots in UI demo
     date: v.string(),
     status: v.string(), // "PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"
     totalPrice: v.number(),
@@ -95,7 +96,7 @@ export default defineSchema({
   }).index("by_booking", ["bookingId"]),
 
   lapTimes: defineTable({
-    userId: v.id("users"),
+    userId: v.string(),
     trackId: v.id("tracks"),
     carId: v.optional(v.id("cars")),
     timeMs: v.number(),
@@ -110,7 +111,7 @@ export default defineSchema({
     date: v.string(), // YYYY-MM-DD
     time: v.string(),
     venueId: v.id("venues"),
-    hostId: v.id("users"),
+    hostId: v.string(),
     maxPlayers: v.number(),
     skillLevel: v.string(),
     status: v.string(), // "OPEN", "FULL", "COMPLETED", "CANCELLED"
@@ -119,7 +120,7 @@ export default defineSchema({
 
   meetupParticipants: defineTable({
     meetupId: v.id("meetups"),
-    userId: v.id("users"),
+    userId: v.string(),
     status: v.string(), // "PENDING", "JOINED", "INVITED", "DECLINED"
     joinedAt: v.number(),
   })

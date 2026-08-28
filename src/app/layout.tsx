@@ -3,7 +3,6 @@ import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import Providers from "@/components/Providers";
-import ConvexClientProvider from '@/components/ConvexClientProvider';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
@@ -30,12 +29,10 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body>
         <Providers>
-          <ConvexClientProvider>
-            <div className="container">
-              {children}
-            </div>
-            <BottomNav />
-          </ConvexClientProvider>
+          <div className="container">
+            {children}
+          </div>
+          <BottomNav />
         </Providers>
       </body>
     </html>
