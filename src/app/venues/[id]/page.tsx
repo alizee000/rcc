@@ -1,22 +1,27 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Star, MapPin, Share2, Clock, Users } from "lucide-react";
-import prisma from "@/lib/prisma";
+import { fetchQuery } from "convex/nextjs";
+// @ts-ignore
+import { api } from "../../../../convex/_generated/api";
+// @ts-ignore
+import { Id } from "../../../../convex/_generated/dataModel";
 import styles from "./page.module.css";
 import VenueActions from "@/components/VenueActions";
 import VenueTrackSelector from "@/components/VenueTrackSelector";
 
+export const dynamic = 'force-dynamic';
+
 export default async function VenueDetail(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   
-  const venue = await prisma.venue.findUnique({
-    where: { id: params.id },
-    include: {
-      tracks: true,
-      cars: true,
-      experiences: true,
-    }
-  });
+  let venue;
+  try {
+    venue = await fetchQuery(api.venues.getVenueById, { id: params.id as Id<"venues"> });
+  } catch (e) {
+    // If ID is invalid format
+    return notFound();
+  }
 
   if (!venue) {
     notFound();
