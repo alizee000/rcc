@@ -5,6 +5,8 @@ import { fetchQuery } from "convex/nextjs";
 import { api } from "../../convex/_generated/api";
 import styles from './page.module.css';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const venues = await fetchQuery(api.venues.getVenues);
 

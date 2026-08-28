@@ -6,6 +6,8 @@ import { api } from "../../../convex/_generated/api";
 import styles from './page.module.css';
 import LeaderboardFilters from '@/components/LeaderboardFilters';
 
+export const dynamic = 'force-dynamic';
+
 function formatTime(ms: number) {
   const date = new Date(ms);
   const m = date.getUTCMinutes();
