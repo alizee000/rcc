@@ -104,7 +104,7 @@ export default async function Home() {
         <h2>Popular Experiences</h2>
       </div>
       <div className={styles.horizontalList}>
-         {venues[0]?.experiences.map((exp) => (
+         {venues?.[0]?.experiences?.map((exp: any) => (
             <div key={exp.id} className={styles.venueCard} style={{ minWidth: '220px' }}>
               <div className={styles.venueInfo}>
                 <div className={styles.venueName}>{exp.name}</div>

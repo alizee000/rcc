@@ -132,7 +132,7 @@ export default function ExploreView({ venues }: { venues: any[] }) {
                       <span><Navigation size={14} /> 5.2 km</span>
                       <span><MapPin size={14} /> {venue.city}</span>
                       {venue.tracks?.length > 0 && (
-                        <span>• {venue.tracks[0].indoorOutdoor}</span>
+                        <span>• {venue.tracks[0]?.indoorOutdoor}</span>
                       )}
                     </div>
                     
