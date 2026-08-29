@@ -71,6 +71,7 @@ export const createBooking = mutation({
     experienceId: v.id("experiences"),
     slotId: v.string(),
     date: v.string(), // ISO String
+    time: v.string(), // e.g., "10:00 - 12:00"
     totalPrice: v.number(),
     players: v.array(
       v.object({
@@ -88,6 +89,7 @@ export const createBooking = mutation({
       experienceId: args.experienceId,
       slotId: args.slotId as any,
       date: args.date,
+      time: args.time,
       status: "CONFIRMED",
       totalPrice: args.totalPrice,
       qrCode,

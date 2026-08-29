@@ -25,6 +25,7 @@ export default function BookingWizard({ venue, user }: Props) {
   const [selectedExp, setSelectedExp] = useState<any>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date(new Date().setHours(0,0,0,0)));
   const [selectedSlot, setSelectedSlot] = useState<any>(null);
+  const [durationHours, setDurationHours] = useState(1);
   const [selectedCar, setSelectedCar] = useState<any>(null);
   const [players, setPlayers] = useState([{ name: user?.name || "", age: "" }]);
   const [loading, setLoading] = useState(false);
@@ -37,6 +38,13 @@ export default function BookingWizard({ venue, user }: Props) {
 
   const createBooking = useMutation(api.bookings.createBooking);
 
+  const getCalculatedEndTime = () => {
+    if (!selectedSlot) return "";
+    const [hours, mins] = selectedSlot.startTime.split(':').map(Number);
+    const endHours = hours + durationHours;
+    return `${endHours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+  };
+
   const handleBook = async () => {
     setLoading(true);
     try {
@@ -46,7 +54,8 @@ export default function BookingWizard({ venue, user }: Props) {
         experienceId: selectedExp.id,
         slotId: selectedSlot.id,
         date: selectedDate.toISOString(),
-        totalPrice: selectedExp.price,
+        time: `${selectedSlot.startTime} - ${getCalculatedEndTime()}`,
+        totalPrice: selectedExp.price * durationHours,
         players: players.map(p => ({
           name: p.name,
           age: parseInt(p.age as string) || 18
@@ -250,6 +259,24 @@ export default function BookingWizard({ venue, user }: Props) {
                 );
               })}
             </div>
+
+            {selectedSlot && (
+              <div style={{ marginTop: 24 }}>
+                <h3 style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 12 }}>Duration</h3>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {[1, 2, 3].map(h => (
+                    <button
+                      key={h}
+                      className={durationHours === h ? "btn-primary" : "btn-secondary"}
+                      style={{ flex: 1, padding: "8px" }}
+                      onClick={() => setDurationHours(h)}
+                    >
+                      {h} Hour{h > 1 ? 's' : ''}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -366,7 +393,7 @@ export default function BookingWizard({ venue, user }: Props) {
               </div>
               <div className={styles.summaryRow}>
                 <span style={{ color: "var(--text-secondary)" }}>Time</span>
-                <span style={{ fontWeight: 600 }}>{selectedSlot?.startTime} - {selectedSlot?.endTime}</span>
+                <span style={{ fontWeight: 600 }}>{selectedSlot?.startTime} - {getCalculatedEndTime()} ({durationHours} hr{durationHours > 1 ? 's' : ''})</span>
               </div>
               <div className={styles.summaryRow}>
                 <span style={{ color: "var(--text-secondary)" }}>Players</span>
@@ -375,7 +402,7 @@ export default function BookingWizard({ venue, user }: Props) {
               
               <div className={styles.summaryTotal}>
                 <span>Total Amount</span>
-                <span>₹{selectedExp?.price}</span>
+                <span>₹{selectedExp?.price * durationHours}</span>
               </div>
             </div>
           </div>

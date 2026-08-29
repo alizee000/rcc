@@ -76,6 +76,7 @@ export default defineSchema({
     experienceId: v.id("experiences"),
     slotId: v.string(), // Allowing string to support mock slots in UI demo
     date: v.string(),
+    time: v.optional(v.string()), // e.g., "10:00 - 12:00"
     status: v.string(), // "PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"
     totalPrice: v.number(),
     qrCode: v.optional(v.string()),
