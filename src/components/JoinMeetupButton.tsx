@@ -66,7 +66,7 @@ export default function JoinMeetupButton({ meetupId, initialStatus, isFull, user
 
   return (
     <button className="btn-primary" onClick={handleJoin} disabled={loading} style={{ width: "100%" }}>
-      {loading ? "Joining..." : "Join Meetup"}
+      {loading ? "Sending..." : "Send Request to Join"}
     </button>
   );
 }

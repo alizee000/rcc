@@ -17,9 +17,6 @@ export default function MeetupsFeed() {
           <h1 className={styles.title}>Community Meetups</h1>
           <p className={styles.subtitle}>Join an open race or host your own!</p>
         </div>
-        <Link href="/meetups/create" className={styles.headerBtn}>
-          <Plus size={24} />
-        </Link>
       </header>
 
       <div>
