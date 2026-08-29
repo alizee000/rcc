@@ -1,12 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, Clock, MapPin, QrCode, X } from "lucide-react";
+import { useMutation } from "convex/react";
+import { Calendar, Clock, MapPin, QrCode, X, Check, UserPlus } from "lucide-react";
 import styles from "../app/bookings/page.module.css";
+import InviteToBookingModal from "./InviteToBookingModal";
+// @ts-ignore
+import { api } from "../../convex/_generated/api";
 
-export default function BookingsList({ user, bookings = [] }: { user: any, bookings?: any[] }) {
+export default function BookingsList({ user, bookings = [], invites = [] }: { user: any, bookings?: any[], invites?: any[] }) {
   const [activeTab, setActiveTab] = useState("UPCOMING");
   const [showPass, setShowPass] = useState<any>(null);
+  const [inviteModalBookingId, setInviteModalBookingId] = useState<string | null>(null);
+
+  const acceptInvite = useMutation(api.bookings.acceptBookingInvite);
+  const declineInvite = useMutation(api.bookings.declineBookingInvite);
+
+  const handleAccept = async (inviteId: string) => {
+    try {
+      await acceptInvite({ inviteId: inviteId as any });
+      // Depending on implementation, you might want to refresh router or let convex react update
+      window.location.reload(); // Simple refresh for now to update Server Components
+    } catch (e) {
+      alert("Failed to accept");
+    }
+  };
+
+  const handleDecline = async (inviteId: string) => {
+    try {
+      await declineInvite({ inviteId: inviteId as any });
+      window.location.reload();
+    } catch (e) {
+      alert("Failed to decline");
+    }
+  };
 
   // If there are no bookings, fallback to an empty array
   const displayBookings = bookings.length > 0 ? bookings : [];
@@ -21,6 +48,12 @@ export default function BookingsList({ user, bookings = [] }: { user: any, booki
           onClick={() => setActiveTab("UPCOMING")}
         >
           Upcoming
+        </button>
+        <button 
+          className={`${styles.tab} ${activeTab === "INVITES" ? styles.tabActive : ""}`}
+          onClick={() => setActiveTab("INVITES")}
+        >
+          Invites {invites.length > 0 && <span style={{ background: "var(--accent-primary)", color: "white", borderRadius: 10, padding: "2px 6px", fontSize: 10, marginLeft: 4 }}>{invites.length}</span>}
         </button>
         <button 
           className={`${styles.tab} ${activeTab === "PAST" ? styles.tabActive : ""}`}
@@ -67,8 +100,79 @@ export default function BookingsList({ user, bookings = [] }: { user: any, booki
                   Directions
                 </button>
               </div>
+
+              {/* Show Invite Racers button only if the current user owns this booking */}
+              {b.userId === user.id && (
+                <div style={{ marginTop: 12 }}>
+                  <button 
+                    className="btn-secondary" 
+                    style={{ width: "100%", padding: "8px", display: "flex", justifyContent: "center", alignItems: "center", gap: 8, borderColor: "var(--border)", color: "var(--text-secondary)" }}
+                    onClick={() => setInviteModalBookingId(b.id)}
+                  >
+                    <UserPlus size={16} /> Invite Racers
+                  </button>
+                </div>
+              )}
             </div>
           ))}
+          {displayBookings.length === 0 && (
+            <div className={styles.emptyState}>
+              <Calendar size={48} style={{ opacity: 0.2, marginBottom: 16 }} />
+              <h3>No upcoming bookings</h3>
+              <p>You have no races scheduled.</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === "INVITES" && (
+        <div>
+          {invites.map((inv) => (
+            <div key={inv._id} className={styles.bookingCard}>
+              <div className={styles.header}>
+                <div className={styles.venueName}>Invite from {inv.inviter?.name}</div>
+                <div className={`${styles.statusText} ${styles.textPending}`}>
+                  PENDING
+                </div>
+              </div>
+              
+              <div className={styles.details}>
+                <div className={styles.detailRow}>
+                  <Calendar size={14} /> {typeof inv.booking.date === 'number' ? new Date(inv.booking.date).toLocaleDateString() : inv.booking.date}
+                </div>
+                <div className={styles.detailRow}>
+                  <Clock size={14} /> {inv.booking.time || '18:00 - 19:00'} ({typeof inv.booking.experience === 'string' ? inv.booking.experience : inv.booking.experience?.name || 'RC Experience'})
+                </div>
+                <div className={styles.detailRow}>
+                  <MapPin size={14} /> {inv.booking.venue?.city || "Bengaluru"} - {inv.booking.venue?.name}
+                </div>
+              </div>
+              
+              <div className={styles.actions}>
+                <button 
+                  className="btn-primary" 
+                  style={{ flex: 1, padding: "8px", backgroundColor: "var(--success)" }}
+                  onClick={() => handleAccept(inv._id)}
+                >
+                  <Check size={16} /> Accept
+                </button>
+                <button 
+                  className="btn-secondary" 
+                  style={{ flex: 1, padding: "8px" }}
+                  onClick={() => handleDecline(inv._id)}
+                >
+                  <X size={16} /> Decline
+                </button>
+              </div>
+            </div>
+          ))}
+          {invites.length === 0 && (
+            <div className={styles.emptyState}>
+              <UserPlus size={48} style={{ opacity: 0.2, marginBottom: 16 }} />
+              <h3>No pending invites</h3>
+              <p>You haven't been invited to any races.</p>
+            </div>
+          )}
         </div>
       )}
 
@@ -118,6 +222,14 @@ export default function BookingsList({ user, bookings = [] }: { user: any, booki
             </div>
           </div>
         </div>
+      )}
+
+      {inviteModalBookingId && (
+        <InviteToBookingModal 
+          bookingId={inviteModalBookingId}
+          inviterId={user.id}
+          onClose={() => setInviteModalBookingId(null)}
+        />
       )}
     </div>
   );

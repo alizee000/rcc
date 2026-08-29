@@ -95,6 +95,17 @@ export default defineSchema({
     carId: v.id("cars"),
   }).index("by_booking", ["bookingId"]),
 
+  bookingInvites: defineTable({
+    bookingId: v.id("bookings"),
+    inviterId: v.string(), // ID of person who booked
+    inviteeId: v.string(), // clerkId of invited user
+    status: v.string(), // "PENDING", "ACCEPTED", "DECLINED"
+    invitedAt: v.number(),
+  })
+    .index("by_booking", ["bookingId"])
+    .index("by_invitee", ["inviteeId"])
+    .index("by_booking_invitee", ["bookingId", "inviteeId"]),
+
   lapTimes: defineTable({
     userId: v.string(),
     trackId: v.id("tracks"),

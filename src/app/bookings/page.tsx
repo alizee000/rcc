@@ -16,6 +16,7 @@ export default async function BookingsPage() {
 
   // Fetch some venues to attach to the mock bookings
   const bookings = await fetchQuery(api.bookings.getUserBookings, { userId: user.id as any });
+  const invites = await fetchQuery(api.bookings.getUserBookingInvites, { userId: user.id as any });
 
   const serializedUser = {
     id: user.id,
@@ -23,5 +24,5 @@ export default async function BookingsPage() {
     email: user.emailAddresses[0]?.emailAddress || ""
   };
 
-  return <BookingsList user={serializedUser as any} bookings={bookings} />;
+  return <BookingsList user={serializedUser as any} bookings={bookings} invites={invites} />;
 }
