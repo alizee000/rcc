@@ -24,7 +24,7 @@ export default function BookingWizard({ venue, user }: Props) {
   );
   const [selectedExp, setSelectedExp] = useState<any>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date(new Date().setHours(0,0,0,0)));
-  const [selectedSlot, setSelectedSlot] = useState<any>(null);
+  const [startTimeHour, setStartTimeHour] = useState<number>(10);
   const [durationHours, setDurationHours] = useState(1);
   const [selectedCar, setSelectedCar] = useState<any>(null);
   const [players, setPlayers] = useState([{ name: user?.name || "", age: "" }]);
@@ -39,11 +39,11 @@ export default function BookingWizard({ venue, user }: Props) {
   const createBooking = useMutation(api.bookings.createBooking);
 
   const getCalculatedEndTime = () => {
-    if (!selectedSlot) return "";
-    const [hours, mins] = selectedSlot.startTime.split(':').map(Number);
-    const endHours = hours + durationHours;
-    return `${endHours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+    const endHours = startTimeHour + durationHours;
+    return `${endHours.toString().padStart(2, '0')}:00`;
   };
+
+  const formattedStartTime = `${startTimeHour.toString().padStart(2, '0')}:00`;
 
   const handleBook = async () => {
     setLoading(true);
@@ -52,9 +52,9 @@ export default function BookingWizard({ venue, user }: Props) {
         userId: user.id as any,
         venueId: venue.id,
         experienceId: selectedExp.id,
-        slotId: selectedSlot.id,
+        slotId: "mock-slider",
         date: selectedDate.toISOString(),
-        time: `${selectedSlot.startTime} - ${getCalculatedEndTime()}`,
+        time: `${formattedStartTime} - ${getCalculatedEndTime()}`,
         totalPrice: selectedExp.price * durationHours,
         players: players.map(p => ({
           name: p.name,
@@ -105,7 +105,6 @@ export default function BookingWizard({ venue, user }: Props) {
   const isNextDisabled = 
     (step === 1 && !selectedTrack) ||
     (step === 2 && !selectedExp) || 
-    (step === 3 && !selectedSlot) || 
     (step === 4 && !selectedCar) ||
     (step === 5 && players.some(p => !p.name || !p.age));
 
@@ -209,7 +208,6 @@ export default function BookingWizard({ venue, user }: Props) {
                       key={i}
                       onClick={() => {
                         setSelectedDate(d);
-                        setSelectedSlot(null);
                       }}
                       style={{
                         minWidth: 70,
@@ -236,47 +234,51 @@ export default function BookingWizard({ venue, user }: Props) {
               </div>
             </div>
             
-            <div className={styles.slotsGrid}>
-              {venue.slots.filter((s: any) => {
-                const year = selectedDate.getFullYear();
-                const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-                const day = String(selectedDate.getDate()).padStart(2, '0');
-                const selectedDateStr = `${year}-${month}-${day}`;
-                return s.date === selectedDateStr;
-              }).map((slot: any) => {
-                const isFull = slot.bookedCount >= slot.capacity;
-                const isSelected = selectedSlot?.id === slot.id;
-                
-                return (
-                  <button
-                    key={slot.id}
-                    disabled={isFull}
-                    className={`${styles.slotBtn} ${isSelected ? styles.slotBtnSelected : ''} ${isFull ? styles.slotBtnDisabled : ''}`}
-                    onClick={() => setSelectedSlot(slot)}
-                  >
-                    {slot.startTime}
-                  </button>
-                );
-              })}
-            </div>
-
-            {selectedSlot && (
-              <div style={{ marginTop: 24 }}>
-                <h3 style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 12 }}>Duration</h3>
-                <div style={{ display: "flex", gap: 8 }}>
-                  {[1, 2, 3].map(h => (
-                    <button
-                      key={h}
-                      className={durationHours === h ? "btn-primary" : "btn-secondary"}
-                      style={{ flex: 1, padding: "8px" }}
-                      onClick={() => setDurationHours(h)}
-                    >
-                      {h} Hour{h > 1 ? 's' : ''}
-                    </button>
-                  ))}
+            <div style={{ marginTop: 32, padding: "24px", backgroundColor: "var(--bg-card)", borderRadius: "16px" }}>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)", marginBottom: 24 }}>Select Time & Duration</h3>
+              
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+                  <span style={{ fontSize: 14, color: "var(--text-secondary)", fontWeight: 500 }}>Start Time</span>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: "var(--accent-primary)" }}>{formattedStartTime}</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="10" 
+                  max="20" 
+                  step="1" 
+                  value={startTimeHour}
+                  onChange={(e) => setStartTimeHour(parseInt(e.target.value))}
+                  style={{ width: "100%", accentColor: "var(--accent-primary)" }}
+                />
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 12, color: "var(--text-secondary)" }}>
+                  <span>10:00</span>
+                  <span>15:00</span>
+                  <span>20:00</span>
                 </div>
               </div>
-            )}
+
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+                  <span style={{ fontSize: 14, color: "var(--text-secondary)", fontWeight: 500 }}>Duration</span>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: "var(--accent-primary)" }}>{durationHours} Hour{durationHours > 1 ? 's' : ''}</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="3" 
+                  step="1" 
+                  value={durationHours}
+                  onChange={(e) => setDurationHours(parseInt(e.target.value))}
+                  style={{ width: "100%", accentColor: "var(--accent-primary)" }}
+                />
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 12, color: "var(--text-secondary)" }}>
+                  <span>1 Hr</span>
+                  <span>2 Hrs</span>
+                  <span>3 Hrs</span>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -393,7 +395,7 @@ export default function BookingWizard({ venue, user }: Props) {
               </div>
               <div className={styles.summaryRow}>
                 <span style={{ color: "var(--text-secondary)" }}>Time</span>
-                <span style={{ fontWeight: 600 }}>{selectedSlot?.startTime} - {getCalculatedEndTime()} ({durationHours} hr{durationHours > 1 ? 's' : ''})</span>
+                <span style={{ fontWeight: 600 }}>{formattedStartTime} - {getCalculatedEndTime()} ({durationHours} hr{durationHours > 1 ? 's' : ''})</span>
               </div>
               <div className={styles.summaryRow}>
                 <span style={{ color: "var(--text-secondary)" }}>Players</span>
