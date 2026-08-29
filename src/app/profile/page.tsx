@@ -71,13 +71,13 @@ export default async function ProfilePage() {
           <ChevronRight size={20} color="rgba(255,255,255,0.5)" />
         </Link>
         
-        <Link href="#" style={glassCardStyle}>
+        <Link href="/profile/settings" style={glassCardStyle}>
           <User size={22} color="rgba(255,255,255,0.7)" />
           <div style={{ flex: 1, fontWeight: 600, fontSize: 16 }}>Edit Profile</div>
           <ChevronRight size={20} color="rgba(255,255,255,0.5)" />
         </Link>
 
-        <Link href="#" style={glassCardStyle}>
+        <Link href="/profile/settings" style={glassCardStyle}>
           <Settings size={22} color="rgba(255,255,255,0.7)" />
           <div style={{ flex: 1, fontWeight: 600, fontSize: 16 }}>Settings & Preferences</div>
           <ChevronRight size={20} color="rgba(255,255,255,0.5)" />

@@ -1,5 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
-import prisma from "@/lib/prisma";
+import { redirect } from "next/navigation";
 import styles from "./layout.module.css";
 import Link from "next/link";
 import { QrCode, ArrowRight } from "lucide-react";
@@ -13,19 +13,9 @@ export default async function AdminDashboard() {
     redirect("/");
   }
 
-  // In MVP we assume the venue partner is looking at Venue 1 (Bengaluru)
-  const venueId = "venue-1"; // Matching seeded ID
-
-  // Fetch some stats
-  const totalCars = await prisma.car.count({ where: { venueId } });
-  const activeBookings = await prisma.booking.count({ 
-    where: { 
-      venueId,
-      status: "CONFIRMED"
-    } 
-  });
-
-  // Mock revenue for today
+  // Mock data since MVP
+  const totalCars = 12;
+  const activeBookings = 4;
   const todayRevenue = activeBookings * 1250;
 
   return (
@@ -33,7 +23,7 @@ export default async function AdminDashboard() {
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>Dashboard Overview</h1>
-          <p className={styles.pageSubtitle}>Welcome back, {session?.user?.name || "Partner"}. Here's what's happening today.</p>
+          <p className={styles.pageSubtitle}>Welcome back, {user.firstName || "Partner"}. Here's what's happening today.</p>
         </div>
         
         <Link href="/admin/checkin" className="btn-primary" style={{ display: "flex", gap: 8, alignItems: "center" }}>
