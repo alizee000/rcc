@@ -25,8 +25,10 @@ export default function BookingWizard({ venue, user }: Props) {
   const [selectedExp, setSelectedExp] = useState<any>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date(new Date().setHours(0,0,0,0)));
   const [startTimeHour, setStartTimeHour] = useState<number>(10);
-  const [durationHours, setDurationHours] = useState(1);
+  const [endTimeHour, setEndTimeHour] = useState<number>(11);
   const [selectedCar, setSelectedCar] = useState<any>(null);
+
+  const durationHours = endTimeHour - startTimeHour;
   const [players, setPlayers] = useState([{ name: user?.name || "", age: "" }]);
   const [loading, setLoading] = useState(false);
   const [bookingComplete, setBookingComplete] = useState<any>(null);
@@ -38,12 +40,10 @@ export default function BookingWizard({ venue, user }: Props) {
 
   const createBooking = useMutation(api.bookings.createBooking);
 
-  const getCalculatedEndTime = () => {
-    const endHours = startTimeHour + durationHours;
-    return `${endHours.toString().padStart(2, '0')}:00`;
-  };
-
   const formattedStartTime = `${startTimeHour.toString().padStart(2, '0')}:00`;
+  const formattedEndTime = `${endTimeHour.toString().padStart(2, '0')}:00`;
+
+  const getCalculatedEndTime = () => formattedEndTime;
 
   const handleBook = async () => {
     setLoading(true);
@@ -235,47 +235,62 @@ export default function BookingWizard({ venue, user }: Props) {
             </div>
             
             <div style={{ marginTop: 32, padding: "24px", backgroundColor: "var(--bg-card)", borderRadius: "16px" }}>
-              <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)", marginBottom: 24 }}>Select Time & Duration</h3>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 24 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)", margin: 0 }}>Select Time</h3>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "var(--accent-primary)", backgroundColor: "rgba(255, 42, 42, 0.1)", padding: "4px 12px", borderRadius: "20px" }}>
+                  Duration: {durationHours} Hour{durationHours > 1 ? 's' : ''}
+                </span>
+              </div>
               
               <div style={{ marginBottom: 32 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
-                  <span style={{ fontSize: 14, color: "var(--text-secondary)", fontWeight: 500 }}>Start Time</span>
-                  <span style={{ fontSize: 16, fontWeight: 700, color: "var(--accent-primary)" }}>{formattedStartTime}</span>
+                  <span style={{ fontSize: 14, color: "var(--text-secondary)", fontWeight: 500 }}>{formattedStartTime}</span>
+                  <span style={{ fontSize: 14, color: "var(--text-secondary)", fontWeight: 500 }}>{formattedEndTime}</span>
                 </div>
-                <input 
-                  type="range" 
-                  min="10" 
-                  max="20" 
-                  step="1" 
-                  value={startTimeHour}
-                  onChange={(e) => setStartTimeHour(parseInt(e.target.value))}
-                  style={{ width: "100%", accentColor: "var(--accent-primary)" }}
-                />
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 12, color: "var(--text-secondary)" }}>
+                
+                <div className={styles.sliderWrapper}>
+                  <div className={styles.sliderTrack}></div>
+                  <div 
+                    className={styles.sliderRange} 
+                    style={{ 
+                      left: `${((startTimeHour - 10) / 12) * 100}%`, 
+                      width: `${((endTimeHour - startTimeHour) / 12) * 100}%` 
+                    }}
+                  ></div>
+                  <input 
+                    type="range" 
+                    min="10" 
+                    max="22" 
+                    step="1" 
+                    value={startTimeHour}
+                    onChange={(e) => {
+                      let val = parseInt(e.target.value);
+                      if (val > endTimeHour - 1) val = endTimeHour - 1;
+                      if (endTimeHour - val > 3) setEndTimeHour(val + 3);
+                      setStartTimeHour(val);
+                    }}
+                    className={styles.sliderInput}
+                  />
+                  <input 
+                    type="range" 
+                    min="10" 
+                    max="22" 
+                    step="1" 
+                    value={endTimeHour}
+                    onChange={(e) => {
+                      let val = parseInt(e.target.value);
+                      if (val < startTimeHour + 1) val = startTimeHour + 1;
+                      if (val - startTimeHour > 3) setStartTimeHour(val - 3);
+                      setEndTimeHour(val);
+                    }}
+                    className={styles.sliderInput}
+                  />
+                </div>
+                
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12, fontSize: 12, color: "var(--text-secondary)" }}>
                   <span>10:00</span>
-                  <span>15:00</span>
-                  <span>20:00</span>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
-                  <span style={{ fontSize: 14, color: "var(--text-secondary)", fontWeight: 500 }}>Duration</span>
-                  <span style={{ fontSize: 16, fontWeight: 700, color: "var(--accent-primary)" }}>{durationHours} Hour{durationHours > 1 ? 's' : ''}</span>
-                </div>
-                <input 
-                  type="range" 
-                  min="1" 
-                  max="3" 
-                  step="1" 
-                  value={durationHours}
-                  onChange={(e) => setDurationHours(parseInt(e.target.value))}
-                  style={{ width: "100%", accentColor: "var(--accent-primary)" }}
-                />
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 12, color: "var(--text-secondary)" }}>
-                  <span>1 Hr</span>
-                  <span>2 Hrs</span>
-                  <span>3 Hrs</span>
+                  <span>16:00</span>
+                  <span>22:00</span>
                 </div>
               </div>
             </div>
