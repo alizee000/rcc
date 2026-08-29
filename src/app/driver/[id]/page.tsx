@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, MapPin, Trophy, Flag, Clock, Users, ShieldAlert, Award } from "lucide-react";
 import { fetchQuery } from "convex/nextjs";
 // @ts-ignore
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 import styles from "./page.module.css";
 import DriverActions from "@/components/DriverActions";
 
