@@ -256,10 +256,20 @@ export default function BookingWizard({ venue, user }: Props) {
                   />
                 </div>
                 
-                <div style={{ position: "relative", height: "20px", marginTop: 12, fontSize: 10, color: "var(--text-secondary)" }}>
+                <div style={{ position: "relative", height: "30px", marginTop: 12, fontSize: 11, color: "var(--text-secondary)" }}>
                   {Array.from({length: 14}, (_, i) => i + 10).map((h, i) => (
-                    <span key={h} style={{ position: "absolute", left: `${(i / 13) * 100}%`, transform: "translateX(-50%)", whiteSpace: "nowrap" }}>
-                      {h > 12 ? `${h - 12}PM` : (h === 12 ? '12PM' : `${h}AM`)}
+                    <span key={h} style={{ 
+                      position: "absolute", 
+                      left: `${(i / 13) * 100}%`, 
+                      transform: "translateX(-50%)", 
+                      textAlign: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      lineHeight: "1.2"
+                    }}>
+                      <span style={{ fontWeight: 600 }}>{h > 12 ? h - 12 : h}</span>
+                      <span style={{ fontSize: 9, opacity: 0.7 }}>{h >= 12 ? 'PM' : 'AM'}</span>
                     </span>
                   ))}
                 </div>
