@@ -2,6 +2,9 @@ import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { User, Settings, Shield, ChevronRight, History } from "lucide-react";
+import { fetchQuery } from "convex/nextjs";
+// @ts-ignore
+import { api } from "../../../convex/_generated/api";
 import { SignOutButton } from "@/components/SignOutButton";
 
 export default async function ProfilePage() {
@@ -9,6 +12,20 @@ export default async function ProfilePage() {
 
   if (!user) {
     redirect("/");
+  }
+
+  const dbUser = await fetchQuery(api.users.getDriverProfile, { id: user.id });
+  const lapTimes = dbUser?.lapTimes || [];
+  
+  let rankImage = "/images/rank_rookie.jpg";
+
+  if (lapTimes.length > 0) {
+    const bestTime = Math.min(...lapTimes.map((l: any) => l.timeMs));
+    if (bestTime < 14700) {
+      rankImage = "/images/rank_pro.jpg";
+    } else if (bestTime < 15500) {
+      rankImage = "/images/rank_amateur.jpg";
+    }
   }
 
   const glassCardStyle = {
@@ -49,13 +66,11 @@ export default async function ProfilePage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 36,
-          fontWeight: 800,
-          color: "white",
           boxShadow: "0 8px 32px rgba(255, 42, 42, 0.4)",
-          backdropFilter: "blur(8px)"
+          backdropFilter: "blur(8px)",
+          overflow: "hidden"
         }}>
-          {user.firstName?.charAt(0) || user.emailAddresses?.[0]?.emailAddress?.charAt(0)?.toUpperCase() || "U"}
+          <img src={rankImage} alt="Profile RC Car" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 4, textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}>
           {user.fullName || user.firstName}
