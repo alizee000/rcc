@@ -253,14 +253,14 @@ export default function BookingWizard({ venue, user }: Props) {
                   <div 
                     className={styles.sliderRange} 
                     style={{ 
-                      left: `${((startTimeHour - 10) / 12) * 100}%`, 
-                      width: `${((endTimeHour - startTimeHour) / 12) * 100}%` 
+                      left: `${((startTimeHour - 10) / 13) * 100}%`, 
+                      width: `${((endTimeHour - startTimeHour) / 13) * 100}%` 
                     }}
                   ></div>
                   <input 
                     type="range" 
                     min="10" 
-                    max="22" 
+                    max="23" 
                     step="1" 
                     value={startTimeHour}
                     onChange={(e) => {
@@ -274,7 +274,7 @@ export default function BookingWizard({ venue, user }: Props) {
                   <input 
                     type="range" 
                     min="10" 
-                    max="22" 
+                    max="23" 
                     step="1" 
                     value={endTimeHour}
                     onChange={(e) => {
@@ -287,10 +287,12 @@ export default function BookingWizard({ venue, user }: Props) {
                   />
                 </div>
                 
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12, fontSize: 12, color: "var(--text-secondary)" }}>
-                  <span>10:00</span>
-                  <span>16:00</span>
-                  <span>22:00</span>
+                <div style={{ position: "relative", height: "20px", marginTop: 12, fontSize: 10, color: "var(--text-secondary)" }}>
+                  {Array.from({length: 14}, (_, i) => i + 10).map((h, i) => (
+                    <span key={h} style={{ position: "absolute", left: `${(i / 13) * 100}%`, transform: "translateX(-50%)", whiteSpace: "nowrap" }}>
+                      {h > 12 ? `${h - 12}PM` : (h === 12 ? '12PM' : `${h}AM`)}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
