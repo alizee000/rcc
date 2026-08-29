@@ -1,0 +1,64 @@
+import Link from "next/link";
+import { ArrowLeft, PlaySquare, Heart, MessageCircle, Share2 } from "lucide-react";
+import styles from "./page.module.css";
+
+export default function ReelsPage() {
+  // Using 5 placeholder RC car shorts IDs (these would be fetched from YouTube API in prod)
+  const reelIds = [
+    "p8_sBXZfUvU", 
+    "r4E5P4e7-W8", 
+    "c_L0v3_wZ3U", 
+    "Y_h9Yl0vX_A", 
+    "B8y_w3zP_M0"
+  ];
+
+  return (
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <Link href="/home" className={styles.backBtn}>
+          <ArrowLeft size={24} color="white" />
+        </Link>
+        <h1 className={styles.title}>RC Racing Reels</h1>
+        <div style={{ width: 24 }}></div>
+      </header>
+
+      <div className={styles.reelsContainer}>
+        {reelIds.map((id, index) => (
+          <div key={index} className={styles.reelWrapper}>
+            <iframe
+              className={styles.iframe}
+              src={`https://www.youtube.com/embed/${id}?autoplay=0&loop=1&controls=0&modestbranding=1&rel=0&playsinline=1`}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            ></iframe>
+            
+            {/* Overlay UI for Reels */}
+            <div className={styles.overlay}>
+              <div className={styles.overlayBottom}>
+                <h3 className={styles.reelTitle}>Epic RC Drift Battle 🔥</h3>
+                <p className={styles.reelSubtitle}>#rcdrift #rcracing #rccars</p>
+              </div>
+              
+              <div className={styles.actions}>
+                <button className={styles.actionBtn}>
+                  <Heart size={28} color="white" />
+                  <span>{12 + index}k</span>
+                </button>
+                <button className={styles.actionBtn}>
+                  <MessageCircle size={28} color="white" />
+                  <span>{142 + index * 10}</span>
+                </button>
+                <button className={styles.actionBtn}>
+                  <Share2 size={28} color="white" />
+                  <span>Share</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
