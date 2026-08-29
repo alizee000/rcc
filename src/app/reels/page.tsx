@@ -10,11 +10,11 @@ export default function ReelsPage() {
 
   // Real RC car youtube shorts IDs
   const reelIds = [
-    "S66F6H4b5p8",
-    "HGMmGHDWzI8",
-    "_95Fn3N-q2A",
-    "soaCJqzQcuw",
-    "nNKI6s__5DU"
+    "egD2V2scIZ0",
+    "HJd8-y-3gdM",
+    "7qWPCauyEqI",
+    "Cw-tZyMFATg",
+    "gn0z_Yq-_KM"
   ];
 
   useEffect(() => {
