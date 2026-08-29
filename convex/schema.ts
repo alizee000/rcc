@@ -24,6 +24,7 @@ export default defineSchema({
     lng: v.number(),
     imageUrl: v.optional(v.string()),
     rating: v.number(),
+    categories: v.optional(v.array(v.string())),
     createdAt: v.number(),
   }),
 

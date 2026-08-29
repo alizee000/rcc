@@ -1,22 +1,29 @@
+"use client";
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { MapPin, Bell, User, Search, Star, Clock, Navigation } from 'lucide-react';
-import { fetchQuery } from "convex/nextjs";
+import { useQuery } from "convex/react";
 // @ts-ignore
 import { api } from "../../../convex/_generated/api";
 import styles from './page.module.css';
 
-export const dynamic = 'force-dynamic';
-
-export default async function Home() {
-  const venues = await fetchQuery(api.venues.getVenues);
+export default function Home() {
+  const venues = useQuery(api.venues.getVenues);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   const categories = [
-    { name: '🏎️ RC Racing' },
-    { name: '🏁 Drift' },
-    { name: '🚙 Off-Road' },
-    { name: '👨‍👩‍👧 Family' },
-    { name: '🎂 Birthday' },
+    { name: 'All' },
+    { name: 'RC Racing' },
+    { name: 'Drift' },
+    { name: 'Off-Road' },
+    { name: 'Family' },
+    { name: 'Birthday' },
   ];
+
+  const filteredVenues = venues 
+    ? (selectedCategory === "All" ? venues : venues.filter((v: any) => v.categories?.includes(selectedCategory))) 
+    : [];
 
   return (
     <main className={styles.home}>
@@ -54,7 +61,7 @@ export default async function Home() {
         <div className={styles.heroOverlay}></div>
         <div className={styles.heroContent}>
           <h1 className={`${styles.heroTitle} text-gradient`}>Ready to<br/>Race?</h1>
-          <Link href="/explore" className="btn-primary" style={{ display: 'inline-flex', width: 'fit-content' }}>
+          <Link href="#nearby" className="btn-primary" style={{ display: 'inline-flex', width: 'fit-content' }}>
             Find a Track
           </Link>
         </div>
@@ -63,40 +70,56 @@ export default async function Home() {
       {/* Categories */}
       <div className={styles.categories}>
         {categories.map((cat) => (
-          <Link key={cat.name} href={`/explore?category=${encodeURIComponent(cat.name.replace(/[^a-zA-Z -]/g, '').trim())}`} className={styles.categoryBadge}>
+          <button 
+            key={cat.name} 
+            onClick={() => setSelectedCategory(cat.name)}
+            className={styles.categoryBadge}
+            style={{
+              backgroundColor: selectedCategory === cat.name ? 'var(--accent-primary)' : 'rgba(255,255,255,0.1)',
+              color: 'white',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s'
+            }}
+          >
             {cat.name}
-          </Link>
+          </button>
         ))}
       </div>
 
       {/* Nearby Tracks */}
-      <div className={styles.sectionHeader}>
-        <h2>Nearby Tracks</h2>
-        <Link href="/explore" className={styles.seeAll}>See All</Link>
+      <div id="nearby" className={styles.sectionHeader} style={{ scrollMarginTop: 100 }}>
+        <h2>Nearby Tracks {selectedCategory !== "All" && `(${selectedCategory})`}</h2>
       </div>
 
       <div className={styles.horizontalList}>
-        {venues.map((venue) => (
-          <Link href={`/venues/${venue.id}`} key={venue.id} className={styles.venueCard}>
-            <img src={venue.imageUrl || ''} alt={venue.name} className={styles.venueImg} />
-            <div className={styles.venueInfo}>
-              <div className={styles.venueName}>{venue.name}</div>
-              <div className={styles.venueDetails}>
-                <span><Star size={14} color="var(--warning)" /> {venue.rating}</span>
-                <span><Navigation size={14} /> 5.2 km</span>
-                <span><MapPin size={14} /> {venue.city}</span>
-              </div>
-              <div className={styles.venueFooter}>
-                <div className={styles.price}>
-                  {venue.experiences.length > 0 
-                    ? `From ₹${Math.min(...venue.experiences.map(e => e.price))}`
-                    : 'View pricing'}
+        {venues === undefined ? (
+          <div style={{ padding: 20, color: 'var(--text-secondary)' }}>Loading tracks...</div>
+        ) : filteredVenues.length === 0 ? (
+          <div style={{ padding: 20, color: 'var(--text-secondary)' }}>No tracks found for this category.</div>
+        ) : (
+          filteredVenues.map((venue: any) => (
+            <Link href={`/venues/${venue.id}`} key={venue.id} className={styles.venueCard}>
+              <img src={venue.imageUrl || ''} alt={venue.name} className={styles.venueImg} />
+              <div className={styles.venueInfo}>
+                <div className={styles.venueName}>{venue.name}</div>
+                <div className={styles.venueDetails}>
+                  <span><Star size={14} color="var(--warning)" /> {venue.rating}</span>
+                  <span><Navigation size={14} /> 5.2 km</span>
+                  <span><MapPin size={14} /> {venue.city}</span>
                 </div>
-                <button className="btn-primary" style={{ padding: '8px 16px', fontSize: '12px', whiteSpace: 'nowrap', flexShrink: 0 }}>Book Now</button>
+                <div className={styles.venueFooter}>
+                  <div className={styles.price}>
+                    {venue.experiences && venue.experiences.length > 0 
+                      ? `From ₹${Math.min(...venue.experiences.map((e: any) => e.price))}`
+                      : 'View pricing'}
+                  </div>
+                  <button className="btn-primary" style={{ padding: '8px 16px', fontSize: '12px', whiteSpace: 'nowrap', flexShrink: 0 }}>Book Now</button>
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          ))
+        )}
       </div>
       
       {/* Popular Experiences (Mock for now) */}
