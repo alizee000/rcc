@@ -22,20 +22,20 @@ export default function BookingWizard({ venue, user }: Props) {
   const [selectedTrack, setSelectedTrack] = useState<any>(
     initialTrackId ? venue.tracks?.find((t: any) => t.id === initialTrackId) || null : null
   );
-  const [selectedExp, setSelectedExp] = useState<any>(null);
+  const [selectedExp, setSelectedExp] = useState<any>(venue.experiences?.[0] || null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date(new Date().setHours(0,0,0,0)));
   const [startTimeHour, setStartTimeHour] = useState<number>(10);
   const [endTimeHour, setEndTimeHour] = useState<number>(11);
   const [selectedCar, setSelectedCar] = useState<any>(null);
 
   const durationHours = endTimeHour - startTimeHour;
-  const [players, setPlayers] = useState([{ name: user?.name || "", age: "" }]);
+  const [players, setPlayers] = useState([{ name: user?.name || "" }]);
   const [loading, setLoading] = useState(false);
   const [bookingComplete, setBookingComplete] = useState<any>(null);
 
-  const steps = [1, 2, 3, 4, 5, 6];
+  const steps = [1, 2, 3, 4, 5];
 
-  const handleNext = () => setStep((s) => Math.min(s + 1, 6));
+  const handleNext = () => setStep((s) => Math.min(s + 1, 5));
   const handlePrev = () => setStep((s) => Math.max(s - 1, 1));
 
   const createBooking = useMutation(api.bookings.createBooking);
@@ -58,7 +58,7 @@ export default function BookingWizard({ venue, user }: Props) {
         totalPrice: selectedExp.price * durationHours,
         players: players.map(p => ({
           name: p.name,
-          age: parseInt(p.age as string) || 18
+          age: 18
         }))
       });
       
@@ -104,9 +104,8 @@ export default function BookingWizard({ venue, user }: Props) {
 
   const isNextDisabled = 
     (step === 1 && !selectedTrack) ||
-    (step === 2 && !selectedExp) || 
-    (step === 4 && !selectedCar) ||
-    (step === 5 && players.some(p => !p.name || !p.age));
+    (step === 3 && !selectedCar) ||
+    (step === 4 && players.some(p => !p.name));
 
   return (
     <div className={styles.container}>
@@ -161,37 +160,7 @@ export default function BookingWizard({ venue, user }: Props) {
 
         {step === 2 && (
           <div>
-            <h2 className={styles.sectionTitle}>2. Choose Experience</h2>
-            <div className={styles.cardList}>
-              {venue.experiences.map((exp: any) => (
-                <div 
-                  key={exp.id} 
-                  className={`${styles.selectableCard} ${selectedExp?.id === exp.id ? styles.selectableCardSelected : ''}`}
-                  style={{
-                    position: "relative",
-                    backgroundColor: selectedExp?.id === exp.id ? "rgba(255, 42, 42, 0.1)" : ""
-                  }}
-                  onClick={() => setSelectedExp(exp)}
-                >
-                  {selectedExp?.id === exp.id && (
-                    <div style={{ position: "absolute", top: 12, right: 12, color: "var(--accent-primary)" }}>
-                      <CheckCircle2 size={20} fill="currentColor" color="var(--bg-card)" />
-                    </div>
-                  )}
-                  <div>
-                    <div className={styles.cardTitle}>{exp.name}</div>
-                    <div className={styles.cardDesc}>{exp.durationMins} mins • Max {exp.maxPlayers} players</div>
-                  </div>
-                  <div className={styles.cardPrice}>₹{exp.price}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div>
-            <h2 className={styles.sectionTitle}>3. Choose Date & Time</h2>
+            <h2 className={styles.sectionTitle}>2. Choose Date & Time</h2>
             <div className={styles.dateSelector}>
               <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 16, scrollbarWidth: "none" }}>
                 {Array.from({ length: 7 }).map((_, i) => {
@@ -299,9 +268,9 @@ export default function BookingWizard({ venue, user }: Props) {
           </div>
         )}
 
-        {step === 4 && (
+        {step === 3 && (
           <div>
-            <h2 className={styles.sectionTitle}>4. Choose RC Car</h2>
+            <h2 className={styles.sectionTitle}>3. Choose RC Car</h2>
             <div className={styles.cardList}>
               {venue.cars?.map((car: any) => (
                 <div 
@@ -332,17 +301,17 @@ export default function BookingWizard({ venue, user }: Props) {
           </div>
         )}
 
-        {step === 5 && (
+        {step === 4 && (
           <div>
-            <h2 className={styles.sectionTitle}>5. Player Details</h2>
+            <h2 className={styles.sectionTitle}>4. Player Details</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {players.map((p, index) => (
                 <div key={index} style={{ backgroundColor: "var(--bg-card)", padding: 16, borderRadius: 16 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 16, color: "var(--accent-primary)" }}>
-                    Player {index + 1}
+                    Player 1 (Host)
                   </div>
                   <div className={styles.inputGroup}>
-                    <label>Player Name</label>
+                    <label>Your Name</label>
                     <input 
                       type="text" 
                       value={p.name} 
@@ -354,31 +323,14 @@ export default function BookingWizard({ venue, user }: Props) {
                       placeholder="Enter name"
                     />
                   </div>
-                  <div className={styles.inputGroup}>
-                    <label>Player Age</label>
-                    <input 
-                      type="number" 
-                      value={p.age} 
-                      onChange={(e) => {
-                        const newPlayers = [...players];
-                        newPlayers[index].age = e.target.value;
-                        setPlayers(newPlayers);
-                      }}
-                      placeholder="Enter age"
-                    />
-                  </div>
                 </div>
               ))}
               
-              {selectedExp && players.length < selectedExp.maxPlayers && (
-                <button 
-                  className="btn-secondary" 
-                  style={{ alignSelf: "flex-start", fontSize: 14, padding: "8px 16px" }}
-                  onClick={() => setPlayers([...players, { name: "", age: "" }])}
-                >
-                  + Add Player (Max {selectedExp.maxPlayers})
-                </button>
-              )}
+              <div style={{ padding: 16, borderRadius: 16, border: "1px dashed var(--border)", textAlign: "center" }}>
+                <p style={{ fontSize: 14, color: "var(--text-secondary)" }}>
+                  Invite players directly from your Bookings dashboard after confirmation!
+                </p>
+              </div>
             </div>
             <p style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 16 }}>
               The selected car ({selectedCar?.name}) will be assigned to Player 1.
@@ -386,9 +338,9 @@ export default function BookingWizard({ venue, user }: Props) {
           </div>
         )}
 
-        {step === 6 && (
+        {step === 5 && (
           <div>
-            <h2 className={styles.sectionTitle}>6. Booking Summary</h2>
+            <h2 className={styles.sectionTitle}>5. Booking Summary</h2>
             <div style={{ backgroundColor: "var(--bg-card)", padding: 24, borderRadius: 16 }}>
               <div className={styles.summaryRow}>
                 <span style={{ color: "var(--text-secondary)" }}>Venue</span>
@@ -435,7 +387,7 @@ export default function BookingWizard({ venue, user }: Props) {
           </button>
         )}
         
-        {step < 6 ? (
+        {step < 5 ? (
           <button 
             className="btn-primary" 
             style={{ flex: 2 }} 
