@@ -28,6 +28,23 @@ export default async function DriverProfile(props: { params: Promise<{ id: strin
 
   const lapTimes = user.lapTimes || [];
 
+  let rank = "Rookie Rank";
+  let rankColor = "var(--text-secondary)";
+  let rankImage = "/images/rank_rookie.jpg";
+
+  if (lapTimes.length > 0) {
+    const bestTime = Math.min(...lapTimes.map((l: any) => l.timeMs));
+    if (bestTime < 14700) {
+      rank = "Pro Rank";
+      rankColor = "var(--warning)";
+      rankImage = "/images/rank_pro.jpg";
+    } else if (bestTime < 15500) {
+      rank = "Amateur Rank";
+      rankColor = "var(--accent-primary)";
+      rankImage = "/images/rank_amateur.jpg";
+    }
+  }
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -41,13 +58,13 @@ export default async function DriverProfile(props: { params: Promise<{ id: strin
       </header>
 
       <div className={styles.profileHero}>
-        <div className={styles.avatar}>
-          {user.name?.charAt(0) || "U"}
+        <div className={styles.avatar} style={{ padding: 0, overflow: 'hidden', backgroundColor: 'transparent' }}>
+          <img src={rankImage} alt={`${rank} Car`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <h2 className={styles.name}>{user.name}</h2>
         <div className={styles.statsRow}>
-          <div className={styles.statBadge}>
-            <Trophy size={14} color="var(--warning)" /> Pro Rank
+          <div className={styles.statBadge} style={{ color: rankColor, borderColor: rankColor }}>
+            <Trophy size={14} color={rankColor} /> {rank}
           </div>
           <div className={styles.statBadge}>
             <MapPin size={14} /> Bengaluru
