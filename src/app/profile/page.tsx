@@ -14,8 +14,8 @@ export default async function ProfilePage() {
   const glassCardStyle = {
     display: "flex",
     alignItems: "center",
-    gap: 16,
-    padding: "16px 20px",
+    gap: 12,
+    padding: "16px",
     backgroundColor: "rgba(0, 0, 0, 0.4)",
     backdropFilter: "blur(16px)",
     WebkitBackdropFilter: "blur(16px)",
@@ -29,12 +29,14 @@ export default async function ProfilePage() {
   return (
     <div style={{ 
       minHeight: "100vh",
-      padding: "40px 24px 100px 24px",
+      padding: "40px 16px 100px 16px",
       backgroundImage: 'linear-gradient(to bottom, rgba(10, 10, 10, 0.5), rgba(10, 10, 10, 0.95)), url("/profile-bg.jpg")',
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundAttachment: "fixed",
-      color: "white"
+      color: "white",
+      width: "100%",
+      overflowX: "hidden"
     }}>
       <header style={{ marginBottom: 40, textAlign: "center", position: "relative", zIndex: 10 }}>
         <div style={{ 
@@ -66,20 +68,20 @@ export default async function ProfilePage() {
       <div style={{ display: "flex", flexDirection: "column", gap: 16, position: "relative", zIndex: 10 }}>
         
         <Link href="/bookings" style={glassCardStyle}>
-          <History size={22} color="rgba(255,255,255,0.7)" />
-          <div style={{ flex: 1, fontWeight: 600, fontSize: 16 }}>Booking History</div>
+          <History size={20} color="rgba(255,255,255,0.7)" />
+          <div style={{ flex: 1, fontWeight: 600, fontSize: 15, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Booking History</div>
           <ChevronRight size={20} color="rgba(255,255,255,0.5)" />
         </Link>
         
         <Link href="/profile/settings" style={glassCardStyle}>
-          <User size={22} color="rgba(255,255,255,0.7)" />
-          <div style={{ flex: 1, fontWeight: 600, fontSize: 16 }}>Edit Profile</div>
+          <User size={20} color="rgba(255,255,255,0.7)" />
+          <div style={{ flex: 1, fontWeight: 600, fontSize: 15, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Edit Profile</div>
           <ChevronRight size={20} color="rgba(255,255,255,0.5)" />
         </Link>
 
         <Link href="/profile/settings" style={glassCardStyle}>
-          <Settings size={22} color="rgba(255,255,255,0.7)" />
-          <div style={{ flex: 1, fontWeight: 600, fontSize: 16 }}>Settings & Preferences</div>
+          <Settings size={20} color="rgba(255,255,255,0.7)" />
+          <div style={{ flex: 1, fontWeight: 600, fontSize: 15, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Settings & Preferences</div>
           <ChevronRight size={20} color="rgba(255,255,255,0.5)" />
         </Link>
         
@@ -89,8 +91,8 @@ export default async function ProfilePage() {
           border: "1px solid rgba(255, 42, 42, 0.4)",
           background: "linear-gradient(135deg, rgba(255, 42, 42, 0.1), rgba(255, 42, 42, 0.05))"
         }}>
-          <Shield size={22} color="#ff2a2a" />
-          <div style={{ flex: 1, fontWeight: 600, color: "#ff2a2a", fontSize: 16 }}>Venue Partner Portal</div>
+          <Shield size={20} color="#ff2a2a" />
+          <div style={{ flex: 1, fontWeight: 600, color: "#ff2a2a", fontSize: 15, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Venue Partner Portal</div>
           <ChevronRight size={20} color="#ff2a2a" />
         </Link>
 

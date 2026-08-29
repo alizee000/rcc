@@ -8,7 +8,9 @@ export default function ProfileSettingsPage() {
       minHeight: "100vh", 
       backgroundColor: "var(--bg-primary)",
       padding: "24px 16px",
-      paddingBottom: "100px"
+      paddingBottom: "100px",
+      width: "100%",
+      overflowX: "hidden"
     }}>
       <header style={{ display: "flex", alignItems: "center", marginBottom: 24, gap: 16 }}>
         <Link href="/profile" style={{
@@ -26,7 +28,7 @@ export default function ProfileSettingsPage() {
         <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Account Settings</h1>
       </header>
 
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{ width: "100%" }}>
         <UserProfile 
           appearance={{
             elements: {
@@ -38,7 +40,9 @@ export default function ProfileSettingsPage() {
                 color: "white",
                 borderRadius: "16px",
                 border: "1px solid var(--border)",
-                boxShadow: "none"
+                boxShadow: "none",
+                width: "100%",
+                maxWidth: "100%"
               },
               headerTitle: {
                 color: "white"
