@@ -3,13 +3,13 @@ import { ArrowLeft, PlaySquare, Heart, MessageCircle, Share2 } from "lucide-reac
 import styles from "./page.module.css";
 
 export default function ReelsPage() {
-  // Using 5 placeholder RC car shorts IDs (these would be fetched from YouTube API in prod)
+  // Real RC car youtube shorts IDs
   const reelIds = [
-    "p8_sBXZfUvU", 
-    "r4E5P4e7-W8", 
-    "c_L0v3_wZ3U", 
-    "Y_h9Yl0vX_A", 
-    "B8y_w3zP_M0"
+    "S66F6H4b5p8",
+    "HGMmGHDWzI8",
+    "_95Fn3N-q2A",
+    "soaCJqzQcuw",
+    "nNKI6s__5DU"
   ];
 
   return (
