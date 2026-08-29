@@ -164,8 +164,12 @@ export default async function MeetupDetail(props: { params: Promise<{ id: string
       </div>
 
       <div className={styles.footer}>
-        {!isHost && (
+        {!isHost ? (
           <JoinMeetupButton meetupId={meetup.id} initialStatus={userStatus} isFull={isFull} userId={currentUserData.id} />
+        ) : (
+          <button className="btn-secondary" disabled style={{ width: "100%" }}>
+            You are the Host
+          </button>
         )}
       </div>
     </div>
