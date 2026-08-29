@@ -49,10 +49,7 @@ export const syncUser = mutation({
 export const getDriverProfile = query({
   args: { id: v.string() },
   handler: async (ctx, args) => {
-    let user = null;
-    try {
-      user = await ctx.db.get(args.id as any);
-    } catch(e) {}
+    let user = await ctx.db.query("users").filter(q => q.eq(q.field("_id"), args.id)).first();
     
     if (!user) {
       user = await ctx.db.query("users").filter(q => q.eq(q.field("clerkId"), args.id)).first();

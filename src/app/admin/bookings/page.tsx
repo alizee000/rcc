@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import styles from "../layout.module.css";
-import { Search } from "lucide-react";
+import { Search, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +21,9 @@ export default async function AdminBookings() {
     <div>
       <div className={styles.pageHeader}>
         <div>
+          <Link href="/admin" style={{ display: "flex", alignItems: "center", marginBottom: 12, color: "var(--text-secondary)", fontSize: 14 }}>
+            <ArrowLeft size={16} style={{ marginRight: 8 }} /> Back to Dashboard
+          </Link>
           <h1 className={styles.pageTitle}>Bookings & Slots</h1>
           <p className={styles.pageSubtitle}>View all reservations and manage schedule.</p>
         </div>

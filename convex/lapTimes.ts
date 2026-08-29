@@ -14,10 +14,7 @@ export const getLeaderboards = query({
     
     return await Promise.all(
       top10.map(async (lap) => {
-        let userDoc = null;
-        try {
-          userDoc = await ctx.db.get(lap.userId as any);
-        } catch (e) {}
+        let userDoc = await ctx.db.query("users").filter(q => q.eq(q.field("_id"), lap.userId)).first();
         
         if (!userDoc) {
           userDoc = await ctx.db.query("users").filter(q => q.eq(q.field("clerkId"), lap.userId)).first();

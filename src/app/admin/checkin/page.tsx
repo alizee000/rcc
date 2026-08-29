@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { QrCode, CheckCircle, Search } from "lucide-react";
+import { QrCode, CheckCircle, Search, ArrowLeft } from "lucide-react";
 import layoutStyles from "../layout.module.css";
 import styles from "./page.module.css";
+import Link from "next/link";
 
 export default function AdminCheckIn() {
   const [bookingId, setBookingId] = useState("");
@@ -48,6 +49,9 @@ export default function AdminCheckIn() {
     <div>
       <div className={layoutStyles.pageHeader}>
         <div>
+          <Link href="/admin" style={{ display: "flex", alignItems: "center", marginBottom: 12, color: "var(--text-secondary)", fontSize: 14 }}>
+            <ArrowLeft size={16} style={{ marginRight: 8 }} /> Back to Dashboard
+          </Link>
           <h1 className={layoutStyles.pageTitle}>Scanner & Check-in</h1>
           <p className={layoutStyles.pageSubtitle}>Validate racer passes and assign cars to the track.</p>
         </div>

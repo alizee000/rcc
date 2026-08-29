@@ -30,7 +30,7 @@ export default async function VenueDetail(props: { params: Promise<{ id: string 
   return (
     <div className={styles.container}>
       <div className={styles.hero}>
-        <Link href="/explore" className={styles.backBtn}>
+        <Link href="/home" className={styles.backBtn}>
           <ArrowLeft size={20} />
         </Link>
         <img src={venue.imageUrl || ""} alt={venue.name} className={styles.heroImg} />
