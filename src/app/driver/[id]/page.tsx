@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Trophy, Flag, Clock, Users, ShieldAlert, Award } from "lucide-react";
-import prisma from "@/lib/prisma";
+import { fetchQuery } from "convex/nextjs";
+// @ts-ignore
+import { api } from "../../../convex/_generated/api";
 import styles from "./page.module.css";
 import DriverActions from "@/components/DriverActions";
 
@@ -13,29 +15,18 @@ function formatTime(ms: number) {
   return `${m}:${s.toString().padStart(2, '0')}.${msPart.toString().padStart(3, '0')}`;
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function DriverProfile(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   
-  const user = await prisma.user.findUnique({
-    where: { id: params.id }
-  });
+  const user = await fetchQuery(api.users.getDriverProfile, { id: params.id });
 
   if (!user) {
     notFound();
   }
 
-  // Get their lap times
-  const lapTimes = await prisma.lapTime.findMany({
-    where: { userId: params.id },
-    include: {
-      track: {
-        include: { venue: true }
-      },
-      car: true
-    },
-    orderBy: { timeMs: 'asc' },
-    take: 5
-  });
+  const lapTimes = user.lapTimes || [];
 
   return (
     <div className={styles.container}>
@@ -100,7 +91,7 @@ export default async function DriverProfile(props: { params: Promise<{ id: strin
         <h3 className={styles.sectionTitle}>Personal Records</h3>
         {lapTimes.length > 0 ? (
           <div className={styles.lapList}>
-            {lapTimes.map((lap) => (
+            {lapTimes.map((lap: any) => (
               <div key={lap.id} className={styles.lapCard}>
                 <div className={styles.lapHeader}>
                   <div>

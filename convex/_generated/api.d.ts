@@ -13,7 +13,6 @@ import type * as lapTimes from "../lapTimes.js";
 import type * as meetups from "../meetups.js";
 import type * as seed from "../seed.js";
 import type * as seedCategories from "../seedCategories.js";
-import type * as updateLeaderboardNames from "../updateLeaderboardNames.js";
 import type * as users from "../users.js";
 import type * as venues from "../venues.js";
 
@@ -29,7 +28,6 @@ declare const fullApi: ApiFromModules<{
   meetups: typeof meetups;
   seed: typeof seed;
   seedCategories: typeof seedCategories;
-  updateLeaderboardNames: typeof updateLeaderboardNames;
   users: typeof users;
   venues: typeof venues;
 }>;

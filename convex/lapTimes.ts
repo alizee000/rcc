@@ -14,14 +14,22 @@ export const getLeaderboards = query({
     
     return await Promise.all(
       top10.map(async (lap) => {
-        const user = null; // We don't fetch Clerk users from DB
+        let userDoc = null;
+        try {
+          userDoc = await ctx.db.get(lap.userId as any);
+        } catch (e) {}
+        
+        if (!userDoc) {
+          userDoc = await ctx.db.query("users").filter(q => q.eq(q.field("clerkId"), lap.userId)).first();
+        }
+
         const car = lap.carId ? await ctx.db.get(lap.carId) : null;
         const track = await ctx.db.get(lap.trackId);
         
         return {
           ...lap,
           id: lap._id,
-          user: { id: lap.userId, name: "Racer" },
+          user: { id: lap.userId, name: userDoc?.name || "Racer" },
           car: car ? { name: car.name } : null,
           track: track ? { name: track.name } : null,
         };

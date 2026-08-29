@@ -45,3 +45,50 @@ export const syncUser = mutation({
     });
   },
 });
+
+export const getDriverProfile = query({
+  args: { id: v.string() },
+  handler: async (ctx, args) => {
+    let user = null;
+    try {
+      user = await ctx.db.get(args.id as any);
+    } catch(e) {}
+    
+    if (!user) {
+      user = await ctx.db.query("users").filter(q => q.eq(q.field("clerkId"), args.id)).first();
+    }
+    
+    if (!user) return null;
+
+    // fetch lap times
+    let lapTimes = await ctx.db.query("lapTimes").filter(q => q.eq(q.field("userId"), args.id)).collect();
+    // if userId was stored as _id, we must also check that
+    if (lapTimes.length === 0 && user._id !== args.id) {
+       lapTimes = await ctx.db.query("lapTimes").filter(q => q.eq(q.field("userId"), user!._id)).collect();
+    }
+
+    lapTimes.sort((a, b) => a.timeMs - b.timeMs);
+    const top5 = lapTimes.slice(0, 5);
+
+    const populatedLaps = await Promise.all(
+      top5.map(async (lap) => {
+        const car = lap.carId ? await ctx.db.get(lap.carId) : null;
+        const track = await ctx.db.get(lap.trackId);
+        const venue = track ? await ctx.db.get(track.venueId) : null;
+
+        return {
+          ...lap,
+          id: lap._id,
+          car: car ? { name: car.name } : null,
+          track: track ? { name: track.name, venue: venue ? { name: venue.name } : { name: "Unknown" } } : { name: "Unknown", venue: { name: "Unknown" } },
+        };
+      })
+    );
+
+    return {
+      ...user,
+      id: user._id,
+      lapTimes: populatedLaps
+    };
+  }
+});
