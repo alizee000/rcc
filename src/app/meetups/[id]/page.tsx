@@ -11,7 +11,7 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import styles from "./page.module.css";
 import JoinMeetupButton from "@/components/JoinMeetupButton";
 import ManageRequestButtons from "@/components/ManageRequestButtons";
-import InvitePlayersAction from "@/components/InvitePlayersAction";
+
 
 export const dynamic = 'force-dynamic';
 
@@ -160,14 +160,7 @@ export default async function MeetupDetail(props: { params: Promise<{ id: string
           </div>
         )}
 
-        {isHost && (
-          <div className={styles.section}>
-            <InvitePlayersAction 
-              meetupId={meetup.id} 
-              currentParticipants={meetup.participants.map((p: any) => p.user.id)} 
-            />
-          </div>
-        )}
+
       </div>
 
       <div className={styles.footer}>
