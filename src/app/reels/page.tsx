@@ -1,8 +1,13 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { ArrowLeft, PlaySquare, Heart, MessageCircle, Share2 } from "lucide-react";
 import styles from "./page.module.css";
 
 export default function ReelsPage() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   // Real RC car youtube shorts IDs
   const reelIds = [
     "S66F6H4b5p8",
@@ -11,6 +16,28 @@ export default function ReelsPage() {
     "soaCJqzQcuw",
     "nNKI6s__5DU"
   ];
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const iframe = entry.target.querySelector('iframe');
+        if (!iframe || !iframe.contentWindow) return;
+        
+        if (!entry.isIntersecting) {
+          iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+        }
+      });
+    }, {
+      threshold: 0.5
+    });
+
+    const wrappers = containerRef.current.querySelectorAll('.js-reel-wrapper');
+    wrappers.forEach(wrapper => observer.observe(wrapper));
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -22,12 +49,12 @@ export default function ReelsPage() {
         <div style={{ width: 24 }}></div>
       </header>
 
-      <div className={styles.reelsContainer}>
+      <div className={styles.reelsContainer} ref={containerRef}>
         {reelIds.map((id, index) => (
-          <div key={index} className={styles.reelWrapper}>
+          <div key={index} className={`${styles.reelWrapper} js-reel-wrapper`}>
             <iframe
               className={styles.iframe}
-              src={`https://www.youtube.com/embed/${id}?autoplay=0&loop=1&controls=0&modestbranding=1&rel=0&playsinline=1`}
+              src={`https://www.youtube.com/embed/${id}?autoplay=0&loop=1&controls=0&modestbranding=1&rel=0&playsinline=1&enablejsapi=1`}
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
