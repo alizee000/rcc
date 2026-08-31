@@ -38,18 +38,16 @@ export default function BookingWizard({ venue, user }: Props) {
   const handleNext = () => setStep((s) => Math.min(s + 1, 5));
   const handlePrev = () => setStep((s) => Math.max(s - 1, 1));
 
-  const createBooking = useMutation(api.bookings.createBooking);
-
   const formattedStartTime = `${startTimeHour.toString().padStart(2, '0')}:00`;
   const formattedEndTime = `${endTimeHour.toString().padStart(2, '0')}:00`;
 
   const getCalculatedEndTime = () => formattedEndTime;
 
-  const handleBook = async () => {
+  const handleBook = () => {
     setLoading(true);
     try {
-      const data = await createBooking({
-        userId: user.id as any,
+      const bookingData = {
+        userId: user.id,
         venueId: venue.id,
         experienceId: selectedExp.id,
         slotId: "mock-slider",
@@ -60,13 +58,14 @@ export default function BookingWizard({ venue, user }: Props) {
           name: p.name,
           age: 18
         }))
-      });
+      };
       
-      router.push(`/payment/${data.id}`);
+      const encodedData = encodeURIComponent(btoa(JSON.stringify(bookingData)));
+      router.push(`/payment/checkout?data=${encodedData}`);
     } catch (error) {
       console.error(error);
       setLoading(false);
-      alert("Failed to create booking");
+      alert("Failed to proceed to payment");
     }
   };
 

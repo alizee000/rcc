@@ -1,40 +1,42 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Smartphone, ShieldCheck, Check } from "lucide-react";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation } from "convex/react";
 // @ts-ignore
 import { api } from "../../../../convex/_generated/api";
-// @ts-ignore
-import { Id } from "../../../../convex/_generated/dataModel";
 
 import styles from "./page.module.css";
 
-export default function PaymentPage() {
-  const params = useParams();
+function PaymentContent() {
   const router = useRouter();
-  const bookingId = params.id as Id<"bookings">;
+  const searchParams = useSearchParams();
+  const dataParam = searchParams.get("data");
 
-  const booking = useQuery(api.bookings.getBookingById, { id: bookingId });
-  const confirmPayment = useMutation(api.bookings.confirmPayment);
-
-  const [paymentMethod, setPaymentMethod] = useState("upi"); // upi, card, netbanking
+  const [bookingData, setBookingData] = useState<any>(null);
+  const [paymentMethod, setPaymentMethod] = useState("upi");
   const [upiId, setUpiId] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const createBooking = useMutation(api.bookings.createBooking);
+
   useEffect(() => {
-    if (booking === null || booking?.status === "CONFIRMED") {
-      router.push(booking?.status === "CONFIRMED" ? `/payment/${bookingId}/success` : "/bookings");
+    if (dataParam) {
+      try {
+        const decoded = JSON.parse(atob(decodeURIComponent(dataParam)));
+        setBookingData(decoded);
+      } catch (e) {
+        console.error("Failed to parse booking data", e);
+        router.push("/");
+      }
+    } else {
+      router.push("/");
     }
-  }, [booking, router, bookingId]);
+  }, [dataParam, router]);
 
-  if (booking === undefined) {
-    return <div className={styles.loading}>Loading payment securely...</div>;
-  }
-
-  if (booking === null || booking.status === "CONFIRMED") {
-    return <div className={styles.loading}>Redirecting...</div>;
+  if (!bookingData) {
+    return <div className={styles.loading}>Loading secure payment...</div>;
   }
 
   const handlePay = async () => {
@@ -43,9 +45,11 @@ export default function PaymentPage() {
     // Simulate API delay for payment processing
     setTimeout(async () => {
       try {
-        await confirmPayment({ bookingId });
-        router.push(`/payment/${bookingId}/success`);
+        // Now we actually create the CONFIRMED booking since payment succeeded
+        const result = await createBooking(bookingData);
+        router.push(`/payment/${result.id}/success`);
       } catch (err) {
+        console.error(err);
         alert("Payment failed. Please try again.");
         setIsProcessing(false);
       }
@@ -64,8 +68,8 @@ export default function PaymentPage() {
       <div className={styles.content}>
         <div className={styles.amountCard}>
           <div className={styles.amountLabel}>Total Payable Amount</div>
-          <div className={styles.amountValue}>₹{booking.totalPrice}</div>
-          <div className={styles.transactionId}>Txn ID: {booking.qrCode}-PAY</div>
+          <div className={styles.amountValue}>₹{bookingData.totalPrice}</div>
+          <div className={styles.transactionId}>Txn ID: RC-{Math.random().toString(36).substring(2, 10).toUpperCase()}-PAY</div>
         </div>
 
         <h2 className={styles.sectionTitle}>Select Payment Method</h2>
@@ -138,5 +142,13 @@ export default function PaymentPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div className={styles.loading}>Loading...</div>}>
+      <PaymentContent />
+    </Suspense>
   );
 }
