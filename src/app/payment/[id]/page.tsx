@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Smartphone, ShieldCheck, Check } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
@@ -23,13 +23,17 @@ export default function PaymentPage() {
   const [upiId, setUpiId] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
+  useEffect(() => {
+    if (booking === null || booking?.status === "CONFIRMED") {
+      router.push(booking?.status === "CONFIRMED" ? `/payment/${bookingId}/success` : "/bookings");
+    }
+  }, [booking, router, bookingId]);
+
   if (booking === undefined) {
     return <div className={styles.loading}>Loading payment securely...</div>;
   }
 
   if (booking === null || booking.status === "CONFIRMED") {
-    // If already confirmed or doesn't exist, redirect safely
-    router.push(booking?.status === "CONFIRMED" ? `/payment/${bookingId}/success` : "/bookings");
     return <div className={styles.loading}>Redirecting...</div>;
   }
 
