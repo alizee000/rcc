@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeft, Check, QrCode, CheckCircle2 } from "lucide-react";
 import { useMutation } from "convex/react";
 // @ts-ignore
@@ -16,6 +16,7 @@ interface Props {
 
 export default function BookingWizard({ venue, user }: Props) {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const initialTrackId = searchParams.get("trackId");
 
   const [step, setStep] = useState(1);
@@ -31,7 +32,6 @@ export default function BookingWizard({ venue, user }: Props) {
   const durationHours = endTimeHour - startTimeHour;
   const [players, setPlayers] = useState([{ name: user?.name || "" }]);
   const [loading, setLoading] = useState(false);
-  const [bookingComplete, setBookingComplete] = useState<any>(null);
 
   const steps = [1, 2, 3, 4, 5];
 
@@ -62,45 +62,13 @@ export default function BookingWizard({ venue, user }: Props) {
         }))
       });
       
-      // Simulate payment delay
-      setTimeout(() => {
-        setLoading(false);
-        setBookingComplete(data);
-      }, 1500);
+      router.push(`/payment/${data.id}`);
     } catch (error) {
       console.error(error);
       setLoading(false);
       alert("Failed to create booking");
     }
   };
-
-  if (bookingComplete) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.successScreen}>
-          <div style={{ color: "var(--success)", marginBottom: 16 }}>
-            <Check size={64} />
-          </div>
-          <h1 className={styles.title}>Booking Confirmed!</h1>
-          <p style={{ color: "var(--text-secondary)", marginTop: 8 }}>
-            Your race session at {venue.name} is confirmed.
-          </p>
-          
-          <div className={styles.qrPlaceholder}>
-            <QrCode size={120} color="black" />
-          </div>
-          
-          <div style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 32 }}>
-            Booking ID: {bookingComplete.qrCode}
-          </div>
-          
-          <Link href="/bookings" className="btn-primary" style={{ width: "100%" }}>
-            View My Bookings
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   const isNextDisabled = 
     (step === 1 && !selectedTrack) ||

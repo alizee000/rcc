@@ -22,6 +22,13 @@ export const getBookings = query({
   },
 });
 
+export const getBookingById = query({
+  args: { id: v.id("bookings") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
+  },
+});
+
 export const getUserBookings = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
@@ -90,7 +97,7 @@ export const createBooking = mutation({
       slotId: args.slotId as any,
       date: args.date,
       time: args.time,
-      status: "CONFIRMED",
+      status: "PENDING_PAYMENT",
       totalPrice: args.totalPrice,
       qrCode,
       createdAt: Date.now(),
@@ -104,17 +111,36 @@ export const createBooking = mutation({
       });
     }
 
-    if (!args.slotId.startsWith("mock-")) {
-      const slotId = args.slotId as Id<"availabilitySlots">;
+    return { id: bookingId, qrCode };
+  },
+});
+
+export const confirmPayment = mutation({
+  args: { bookingId: v.id("bookings") },
+  handler: async (ctx, args) => {
+    const booking = await ctx.db.get(args.bookingId);
+    if (!booking) throw new Error("Booking not found");
+    
+    if (booking.status === "CONFIRMED") return { success: true, qrCode: booking.qrCode };
+
+    await ctx.db.patch(args.bookingId, { status: "CONFIRMED" });
+
+    // Update slot booked count
+    if (!booking.slotId.startsWith("mock-")) {
+      const slotId = booking.slotId as Id<"availabilitySlots">;
       const slot = await ctx.db.get(slotId);
       if (slot) {
+        const players = await ctx.db
+          .query("bookingPlayers")
+          .withIndex("by_booking", (q) => q.eq("bookingId", args.bookingId))
+          .collect();
         await ctx.db.patch(slotId, {
-          bookedCount: slot.bookedCount + args.players.length,
+          bookedCount: slot.bookedCount + players.length,
         });
       }
     }
 
-    return { id: bookingId, qrCode };
+    return { success: true, qrCode: booking.qrCode };
   },
 });
 
