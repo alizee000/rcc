@@ -1,7 +1,8 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100vh; /* Fallback for browsers that do not support dvh */
+  height: 100dvh;
   background-color: var(--bg-primary);
 }
 
@@ -139,6 +140,9 @@
   gap: 12px;
   align-items: center;
   padding-bottom: max(12px, env(safe-area-inset-bottom));
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
 .inputField {
