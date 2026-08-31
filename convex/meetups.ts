@@ -188,3 +188,69 @@ export const inviteToMeetup = mutation({
     return { success: true };
   },
 });
+
+export const getMessages = query({
+  args: { meetupId: v.id("meetups") },
+  handler: async (ctx, args) => {
+    const messages = await ctx.db
+      .query("meetupMessages")
+      .withIndex("by_meetup", (q) => q.eq("meetupId", args.meetupId))
+      .order("asc")
+      .collect();
+
+    return await Promise.all(
+      messages.map(async (msg) => {
+        let user = await ctx.db.query("users").filter(q => q.eq(q.field("clerkId"), msg.userId)).first();
+        if (!user) {
+          user = await ctx.db.query("users").filter(q => q.eq(q.field("_id"), msg.userId)).first();
+        }
+        
+        return {
+          ...msg,
+          id: msg._id,
+          user: user ? { id: msg.userId, name: user.name || "Racer" } : { id: msg.userId, name: "Racer" },
+        };
+      })
+    );
+  },
+});
+
+export const sendMessage = mutation({
+  args: {
+    meetupId: v.id("meetups"),
+    userId: v.string(),
+    text: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Verify user is host or JOINED
+    const meetup = await ctx.db.get(args.meetupId);
+    if (!meetup) throw new Error("Meetup not found");
+
+    let isAuthorized = false;
+    if (meetup.hostId === args.userId) {
+      isAuthorized = true;
+    } else {
+      const participant = await ctx.db
+        .query("meetupParticipants")
+        .withIndex("by_meetup_user", (q) => q.eq("meetupId", args.meetupId).eq("userId", args.userId))
+        .first();
+      
+      if (participant && participant.status === "JOINED") {
+        isAuthorized = true;
+      }
+    }
+
+    if (!isAuthorized) {
+      throw new Error("You must join this meetup to chat");
+    }
+
+    await ctx.db.insert("meetupMessages", {
+      meetupId: args.meetupId,
+      userId: args.userId,
+      text: args.text,
+      createdAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});

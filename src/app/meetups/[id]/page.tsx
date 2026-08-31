@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
-import { ArrowLeft, Calendar, Clock, MapPin, Trophy, Users, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, MapPin, Trophy, Users, CheckCircle2, MessageCircle } from "lucide-react";
 import { fetchQuery } from "convex/nextjs";
 // @ts-ignore
 import { api } from "../../../../convex/_generated/api";
@@ -46,6 +46,8 @@ export default async function MeetupDetail(props: { params: Promise<{ id: string
   const invitedParticipants = meetup.participants.filter((p: any) => p.status === "INVITED");
   const pendingParticipants = meetup.participants.filter((p: any) => p.status === "PENDING");
   const isFull = joinedParticipants.length >= meetup.maxPlayers;
+
+  const canChat = isHost || userStatus === "JOINED";
 
   return (
     <div className={styles.container}>
@@ -163,11 +165,17 @@ export default async function MeetupDetail(props: { params: Promise<{ id: string
 
       </div>
 
-      <div className={styles.footer}>
+      <div className={styles.footer} style={{ flexDirection: "column", gap: "12px" }}>
+        {canChat && (
+          <Link href={`/meetups/${meetup.id}/chat`} className="btn-secondary" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+            <MessageCircle size={18} /> Chat with Players
+          </Link>
+        )}
+        
         {!isHost ? (
           <JoinMeetupButton meetupId={meetup.id} initialStatus={userStatus} isFull={isFull} userId={currentUserData.id} />
         ) : (
-          <button className="btn-secondary" disabled style={{ width: "100%" }}>
+          <button className="btn-primary" disabled style={{ width: "100%" }}>
             You are the Host
           </button>
         )}

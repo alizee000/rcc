@@ -140,4 +140,11 @@ export default defineSchema({
     .index("by_meetup", ["meetupId"])
     .index("by_user", ["userId"])
     .index("by_meetup_user", ["meetupId", "userId"]),
+
+  meetupMessages: defineTable({
+    meetupId: v.id("meetups"),
+    userId: v.string(),
+    text: v.string(),
+    createdAt: v.number(),
+  }).index("by_meetup", ["meetupId"]),
 });
