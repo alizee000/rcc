@@ -156,4 +156,14 @@ export default defineSchema({
     isRead: v.boolean(),
     createdAt: v.number(),
   }).index("by_user", ["userId"]),
+
+  reels: defineTable({
+    userId: v.string(),
+    title: v.string(),
+    description: v.optional(v.string()),
+    storageId: v.id("_storage"),
+    likes: v.number(),
+    comments: v.number(),
+    createdAt: v.number(),
+  }).index("by_created_at", ["createdAt"]),
 });
