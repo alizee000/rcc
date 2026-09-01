@@ -44,10 +44,10 @@ export const updateAllImages = mutation({
     const venues = await ctx.db.query("venues").collect();
     
     const gifs = [
-      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3NmU5OThxdGU0bmdqaWlsd3ZxMGNxOWZucjBsdHJ4OGFobG5jejRkbyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/JbjGStrdZXHbi/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzZ0M3Byc2lxdWx2ZjRjMm9vbXAwaG4xMzQ2Y2c1aHNpcDJiNGp4ZCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/W1lu77FtX90DWp5Ay1/giphy.gif",
       "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzZ0M3Byc2lxdWx2ZjRjMm9vbXAwaG4xMzQ2Y2c1aHNpcDJiNGp4ZCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/giCFtrhgZRRKw/giphy.gif",
       "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3NmU5OThxdGU0bmdqaWlsd3ZxMGNxOWZucjBsdHJ4OGFobG5jejRkbyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/DEYfO5n6SUenm/giphy.gif",
-      "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzZ0M3Byc2lxdWx2ZjRjMm9vbXAwaG4xMzQ2Y2c1aHNpcDJiNGp4ZCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/W1lu77FtX90DWp5Ay1/giphy.gif"
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3NmU5OThxdGU0bmdqaWlsd3ZxMGNxOWZucjBsdHJ4OGFobG5jejRkbyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/JbjGStrdZXHbi/giphy.gif"
     ];
 
     for (let i = 0; i < venues.length; i++) {
