@@ -59,7 +59,7 @@ export default function Home() {
         />
         <div className={styles.heroOverlay}></div>
         <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle} style={{ fontSize: '2.5rem', lineHeight: '1.2' }}>
+          <h1 className={styles.heroTitle}>
             <span className={styles.animatedText}>Your Track.</span>
             <span className={`${styles.animatedText} ${styles.delay1}`}>Your Ride.</span>
             <span className={`${styles.animatedText} ${styles.delay2}`}>Your Race.</span>
