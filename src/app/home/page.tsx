@@ -103,38 +103,6 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Trending Reels Banner */}
-      <div style={{ padding: "0 16px", marginTop: "24px" }}>
-        <Link href="/reels" style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "20px",
-          borderRadius: "16px",
-          background: "linear-gradient(135deg, #ff2a2a, #800000)",
-          color: "white",
-          textDecoration: "none",
-          boxShadow: "0 4px 12px rgba(255, 42, 42, 0.3)"
-        }}>
-          <div>
-            <h2 style={{ fontSize: "20px", fontWeight: "700", marginBottom: "4px" }}>Trending Reels 🔥</h2>
-            <p style={{ fontSize: "14px", opacity: 0.9 }}>Watch the most epic RC racing moments</p>
-          </div>
-          <div style={{
-            width: "48px",
-            height: "48px",
-            borderRadius: "50%",
-            backgroundColor: "rgba(255,255,255,0.2)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backdropFilter: "blur(4px)"
-          }}>
-            <PlaySquare size={24} color="white" />
-          </div>
-        </Link>
-      </div>
-
       {/* Nearby Tracks */}
       <div id="nearby" className={styles.sectionHeader} style={{ scrollMarginTop: 100 }}>
         <h2>Nearby Tracks {selectedCategory !== "All" && `(${selectedCategory})`}</h2>

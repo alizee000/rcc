@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Trophy, Calendar, Users, User } from 'lucide-react';
+import { Home, Trophy, Calendar, Users, PlaySquare } from 'lucide-react';
 import styles from './BottomNav.module.css';
 
 export default function BottomNav() {
@@ -13,9 +13,9 @@ export default function BottomNav() {
   const navItems = [
     { name: 'Home', path: '/home', icon: Home },
     { name: 'Leaderboard', path: '/leaderboards', icon: Trophy },
+    { name: 'Reels', path: '/reels', icon: PlaySquare },
     { name: 'Bookings', path: '/bookings', icon: Calendar },
     { name: 'Meetups', path: '/meetups', icon: Users },
-    { name: 'Profile', path: '/profile', icon: User },
   ];
 
   return (
