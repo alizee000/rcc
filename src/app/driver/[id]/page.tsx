@@ -6,6 +6,7 @@ import { fetchQuery } from "convex/nextjs";
 import { api } from "../../../../convex/_generated/api";
 import styles from "./page.module.css";
 import DriverActions from "@/components/DriverActions";
+import ShareLapButton from "@/components/ShareLapButton";
 
 function formatTime(ms: number) {
   const date = new Date(ms);
@@ -111,13 +112,16 @@ export default async function DriverProfile(props: { params: Promise<{ id: strin
             {lapTimes.map((lap: any) => (
               <div key={lap.id} className={styles.lapCard}>
                 <div className={styles.lapHeader}>
-                  <div>
+                  <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 700 }}>{lap.track.name}</div>
                     <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
                       <MapPin size={10} style={{ display: "inline" }} /> {lap.track.venue.name}
                     </div>
                   </div>
-                  <div className={styles.lapTime}>{formatTime(lap.timeMs)}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div className={styles.lapTime}>{formatTime(lap.timeMs)}</div>
+                    <ShareLapButton lap={lap} driverName={user.name || "Driver"} />
+                  </div>
                 </div>
                 <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 8 }}>
                   Car: {lap.car?.name || "Custom"}
