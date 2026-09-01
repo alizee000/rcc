@@ -74,11 +74,19 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background-color: var(--bg-card);
+  background-color: #444455; /* Much lighter solid gray */
+  color: #FFFFFF;
   padding: 12px;
   border-radius: var(--radius-sm);
   font-weight: 600;
   font-size: 14px;
+  border: 1px solid #555566;
+  transition: all 0.2s ease;
+}
+
+.actionBtn:hover {
+  background-color: #555566;
+  border-color: #666677;
 }
 
 .section {
