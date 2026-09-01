@@ -65,13 +65,13 @@
 .hero {
   position: relative;
   height: 200px;
-  margin: 0 16px;
+  margin: 0 12px;
   border-radius: var(--radius-lg);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 24px;
+  padding: 24px 16px;
 }
 
 .heroImage {
@@ -102,11 +102,13 @@
 
 .heroTitle {
   font-family: var(--font-outfit);
-  font-size: clamp(24px, 7vw, 36px);
+  font-size: clamp(18px, 6vw, 32px);
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 12px;
+  letter-spacing: -0.2px;
   text-transform: uppercase;
+  white-space: nowrap;
   
   /* Fire Gradient */
   background: linear-gradient(90deg, #ff1744, #ff8000, #ffc400, #ff1744);
@@ -114,7 +116,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: fireGradient 3s linear infinite;
+  animation: slideUpFade 0.6s ease-out forwards, fireGradient 3s linear infinite;
 }
 
 @keyframes fireGradient {
@@ -122,15 +124,6 @@
     background-position: 200% center;
   }
 }
-
-.animatedText {
-  display: block;
-  opacity: 0;
-  animation: slideUpFade 0.6s ease-out forwards;
-}
-
-.delay1 { animation-delay: 0.15s; }
-.delay2 { animation-delay: 0.3s; }
 
 @keyframes slideUpFade {
   0% {

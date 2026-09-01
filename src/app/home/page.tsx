@@ -60,9 +60,7 @@ export default function Home() {
         <div className={styles.heroOverlay}></div>
         <div className={styles.heroContent}>
           <h1 className={styles.heroTitle}>
-            <span className={styles.animatedText}>Your Track.</span>
-            <span className={`${styles.animatedText} ${styles.delay1}`}>Your Ride.</span>
-            <span className={`${styles.animatedText} ${styles.delay2}`}>Your Race.</span>
+            Your Track. Your Ride.
           </h1>
           <Link href="#nearby" className="btn-primary" style={{ display: 'inline-flex', width: 'fit-content' }}>
             Find a Track
