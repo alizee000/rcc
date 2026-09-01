@@ -12,6 +12,7 @@ import styles from './page.module.css';
 export default function Home() {
   const venues = useQuery(api.venues.getVenues);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const categories = [
     { name: 'All' },
@@ -23,7 +24,16 @@ export default function Home() {
   ];
 
   const filteredVenues = venues 
-    ? (selectedCategory === "All" ? venues : venues.filter((v: any) => v.categories?.includes(selectedCategory))) 
+    ? venues.filter((v: any) => {
+        const matchesCategory = selectedCategory === "All" || v.categories?.includes(selectedCategory);
+        const searchLower = searchQuery.toLowerCase();
+        const matchesSearch = !searchQuery || 
+          v.name.toLowerCase().includes(searchLower) || 
+          (v.city && v.city.toLowerCase().includes(searchLower)) || 
+          (v.experiences && v.experiences.some((e: any) => e.name.toLowerCase().includes(searchLower)));
+        
+        return matchesCategory && matchesSearch;
+      })
     : [];
 
   return (
@@ -46,7 +56,12 @@ export default function Home() {
       <div className={styles.searchContainer}>
         <div className={styles.searchBar}>
           <Search size={18} color="var(--text-secondary)" />
-          <input type="text" placeholder="Search RC tracks, cars or experiences" />
+          <input 
+            type="text" 
+            placeholder="Search RC tracks, cars or experiences" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
       </div>
 
