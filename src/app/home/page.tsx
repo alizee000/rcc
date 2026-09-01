@@ -59,8 +59,10 @@ export default function Home() {
         />
         <div className={styles.heroOverlay}></div>
         <div className={styles.heroContent}>
-          <h1 className={`${styles.heroTitle} text-gradient`} style={{ fontSize: '2rem', lineHeight: '1.2' }}>
-            Your Track.<br/>Your Ride.<br/>Your Race.
+          <h1 className={styles.heroTitle} style={{ fontSize: '2.5rem', lineHeight: '1.2' }}>
+            <span className={styles.animatedText}>Your Track.</span>
+            <span className={`${styles.animatedText} ${styles.delay1}`}>Your Ride.</span>
+            <span className={`${styles.animatedText} ${styles.delay2}`}>Your Race.</span>
           </h1>
           <Link href="#nearby" className="btn-primary" style={{ display: 'inline-flex', width: 'fit-content' }}>
             Find a Track
