@@ -121,11 +121,26 @@
   text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
 
-.fab {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.headerUploadBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.headerUploadBtn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.emptyStateFab {
   width: 64px;
   height: 64px;
   background-color: rgba(255, 255, 255, 0.2);
@@ -138,13 +153,13 @@
   justify-content: center;
   color: white;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  z-index: 999;
   cursor: pointer;
   transition: all 0.2s;
+  margin-bottom: 24px;
 }
 
-.fab:hover {
-  transform: translate(-50%, -50%) scale(1.05);
+.emptyStateFab:hover {
+  transform: scale(1.05);
   background-color: rgba(255, 255, 255, 0.3);
 }
 

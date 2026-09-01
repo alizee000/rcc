@@ -45,7 +45,9 @@ export default function ReelsPage() {
           <ArrowLeft size={24} color="white" />
         </Link>
         <h1 className={styles.title}>RC Racing Reels</h1>
-        <div style={{ width: 40 }}></div>
+        <button onClick={() => setShowUpload(true)} className={styles.headerUploadBtn}>
+          <Plus size={24} color="white" />
+        </button>
       </header>
 
       {reels === undefined ? (
@@ -55,7 +57,9 @@ export default function ReelsPage() {
         </div>
       ) : reels.length === 0 ? (
         <div className={styles.emptyState}>
-          <Film size={48} color="var(--text-secondary)" />
+          <button className={styles.emptyStateFab} onClick={() => setShowUpload(true)}>
+            <Plus size={32} />
+          </button>
           <h2>No Reels Yet</h2>
           <p>Be the first to upload an epic RC racing moment!</p>
         </div>
@@ -111,11 +115,6 @@ export default function ReelsPage() {
           ))}
         </div>
       )}
-
-      {/* Floating Action Button */}
-      <button className={styles.fab} onClick={() => setShowUpload(true)}>
-        <Plus size={24} />
-      </button>
 
       {/* Upload Modal */}
       {showUpload && <UploadReelModal onClose={() => setShowUpload(false)} />}
