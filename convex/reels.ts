@@ -32,6 +32,9 @@ export const createReel = mutation({
 export const getReels = query({
   args: {},
   handler: async (ctx) => {
+    // In a real app we'd get the auth context, mock for now
+    const userId = "mock_user_id";
+
     const reels = await ctx.db
       .query("reels")
       .order("desc") // Get newest first
@@ -48,12 +51,84 @@ export const getReels = query({
           imageUrl: "/images/rank_amateur.jpg"
         };
         
+        // Check if current user has liked this reel
+        const like = await ctx.db
+          .query("reelLikes")
+          .withIndex("by_reel_user", (q) => q.eq("reelId", reel._id).eq("userId", userId))
+          .first();
+        
         return {
           ...reel,
           videoUrl: url,
-          user
+          user,
+          hasLiked: !!like,
         };
       })
     );
+  },
+});
+
+export const toggleLike = mutation({
+  args: { reelId: v.id("reels") },
+  handler: async (ctx, args) => {
+    const userId = "mock_user_id";
+    const reel = await ctx.db.get(args.reelId);
+    if (!reel) throw new Error("Reel not found");
+
+    const existingLike = await ctx.db
+      .query("reelLikes")
+      .withIndex("by_reel_user", (q) => q.eq("reelId", args.reelId).eq("userId", userId))
+      .first();
+
+    if (existingLike) {
+      // Unlike
+      await ctx.db.delete(existingLike._id);
+      await ctx.db.patch(args.reelId, { likes: Math.max(0, reel.likes - 1) });
+      return false; // hasLiked is now false
+    } else {
+      // Like
+      await ctx.db.insert("reelLikes", { reelId: args.reelId, userId });
+      await ctx.db.patch(args.reelId, { likes: reel.likes + 1 });
+      return true; // hasLiked is now true
+    }
+  },
+});
+
+export const getComments = query({
+  args: { reelId: v.id("reels") },
+  handler: async (ctx, args) => {
+    const comments = await ctx.db
+      .query("reelComments")
+      .withIndex("by_reel", (q) => q.eq("reelId", args.reelId))
+      .order("desc")
+      .collect();
+
+    return comments.map(comment => ({
+      ...comment,
+      user: {
+        name: comment.userId === "mock_user_id" ? "You" : "RC Enthusiast",
+        imageUrl: "/images/rank_amateur.jpg"
+      }
+    }));
+  },
+});
+
+export const addComment = mutation({
+  args: { reelId: v.id("reels"), text: v.string() },
+  handler: async (ctx, args) => {
+    const userId = "mock_user_id";
+    const reel = await ctx.db.get(args.reelId);
+    if (!reel) throw new Error("Reel not found");
+
+    const commentId = await ctx.db.insert("reelComments", {
+      reelId: args.reelId,
+      userId,
+      text: args.text,
+      createdAt: Date.now(),
+    });
+
+    await ctx.db.patch(args.reelId, { comments: reel.comments + 1 });
+    
+    return commentId;
   },
 });

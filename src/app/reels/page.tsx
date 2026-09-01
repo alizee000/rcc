@@ -3,16 +3,21 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Heart, MessageCircle, Share2, Plus, Film } from "lucide-react";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 // @ts-ignore
 import { api } from "../../../convex/_generated/api";
+// @ts-ignore
+import { Id } from "../../../convex/_generated/dataModel";
 import styles from "./page.module.css";
 import UploadReelModal from "@/components/UploadReelModal";
+import CommentsModal from "@/components/CommentsModal";
 
 export default function ReelsPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUpload, setShowUpload] = useState(false);
+  const [activeCommentsReel, setActiveCommentsReel] = useState<Id<"reels"> | null>(null);
   const reels = useQuery(api.reels.getReels);
+  const toggleLike = useMutation(api.reels.toggleLike);
 
   useEffect(() => {
     if (!containerRef.current || !reels) return;
@@ -38,6 +43,10 @@ export default function ReelsPage() {
     return () => observer.disconnect();
   }, [reels]);
 
+  const handleLike = async (reelId: Id<"reels">) => {
+    await toggleLike({ reelId });
+  };
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -45,9 +54,7 @@ export default function ReelsPage() {
           <ArrowLeft size={24} color="white" />
         </Link>
         <h1 className={styles.title}>RC Racing Reels</h1>
-        <button onClick={() => setShowUpload(true)} className={styles.headerUploadBtn}>
-          <Plus size={24} color="white" />
-        </button>
+        <div style={{ width: 40 }}></div>
       </header>
 
       {reels === undefined ? (
@@ -57,9 +64,7 @@ export default function ReelsPage() {
         </div>
       ) : reels.length === 0 ? (
         <div className={styles.emptyState}>
-          <button className={styles.emptyStateFab} onClick={() => setShowUpload(true)}>
-            <Plus size={32} />
-          </button>
+          <div style={{ height: 80 }}></div> {/* Space for the centered FAB */}
           <h2>No Reels Yet</h2>
           <p>Be the first to upload an epic RC racing moment!</p>
         </div>
@@ -90,11 +95,11 @@ export default function ReelsPage() {
                 </div>
                 
                 <div className={styles.actions}>
-                  <button className={styles.actionBtn}>
-                    <Heart size={28} color="white" />
+                  <button className={styles.actionBtn} onClick={() => handleLike(reel._id)}>
+                    <Heart size={28} color={reel.hasLiked ? "#ff2a2a" : "white"} fill={reel.hasLiked ? "#ff2a2a" : "transparent"} />
                     <span>{reel.likes || 0}</span>
                   </button>
-                  <button className={styles.actionBtn}>
+                  <button className={styles.actionBtn} onClick={() => setActiveCommentsReel(reel._id)}>
                     <MessageCircle size={28} color="white" />
                     <span>{reel.comments || 0}</span>
                   </button>
@@ -116,8 +121,21 @@ export default function ReelsPage() {
         </div>
       )}
 
+      {/* Floating Action Button */}
+      <button className={styles.fab} onClick={() => setShowUpload(true)}>
+        <Plus size={32} />
+      </button>
+
       {/* Upload Modal */}
       {showUpload && <UploadReelModal onClose={() => setShowUpload(false)} />}
+      
+      {/* Comments Modal */}
+      {activeCommentsReel && (
+        <CommentsModal 
+          reelId={activeCommentsReel} 
+          onClose={() => setActiveCommentsReel(null)} 
+        />
+      )}
     </div>
   );
 }

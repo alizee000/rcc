@@ -166,4 +166,19 @@ export default defineSchema({
     comments: v.number(),
     createdAt: v.number(),
   }).index("by_created_at", ["createdAt"]),
+
+  reelLikes: defineTable({
+    reelId: v.id("reels"),
+    userId: v.string(),
+  })
+    .index("by_reel", ["reelId"])
+    .index("by_user", ["userId"])
+    .index("by_reel_user", ["reelId", "userId"]),
+
+  reelComments: defineTable({
+    reelId: v.id("reels"),
+    userId: v.string(),
+    text: v.string(),
+    createdAt: v.number(),
+  }).index("by_reel", ["reelId"]),
 });
