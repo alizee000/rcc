@@ -134,6 +134,20 @@ export const joinMeetup = mutation({
         status: "PENDING",
         joinedAt: Date.now(),
       });
+      
+      const meetup = await ctx.db.get(args.meetupId);
+      if (meetup && meetup.hostId !== args.userId) {
+        let user = await ctx.db.query("users").filter(q => q.eq(q.field("clerkId"), args.userId)).first();
+        const userName = user ? user.name : "A racer";
+        await ctx.db.insert("notifications", {
+          userId: meetup.hostId,
+          title: "New Meetup Request",
+          message: `${userName} has requested to join your meetup: ${meetup.title}`,
+          link: `/meetups/${args.meetupId}`,
+          isRead: false,
+          createdAt: Date.now(),
+        });
+      }
     }
 
     return { success: true };
@@ -146,6 +160,20 @@ export const approveJoinRequest = mutation({
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.participantId, { status: "JOINED" });
+    const participant = await ctx.db.get(args.participantId);
+    if (participant) {
+      const meetup = await ctx.db.get(participant.meetupId);
+      if (meetup) {
+        await ctx.db.insert("notifications", {
+          userId: participant.userId,
+          title: "Request Approved",
+          message: `Your request to join ${meetup.title} has been approved!`,
+          link: `/meetups/${meetup._id}`,
+          isRead: false,
+          createdAt: Date.now(),
+        });
+      }
+    }
     return { success: true };
   },
 });
@@ -183,6 +211,18 @@ export const inviteToMeetup = mutation({
         status: "INVITED",
         joinedAt: Date.now(),
       });
+      
+      const meetup = await ctx.db.get(args.meetupId);
+      if (meetup) {
+        await ctx.db.insert("notifications", {
+          userId: args.userId,
+          title: "Meetup Invite",
+          message: `You've been invited to join the meetup: ${meetup.title}`,
+          link: `/meetups/${args.meetupId}`,
+          isRead: false,
+          createdAt: Date.now(),
+        });
+      }
     }
 
     return { success: true };

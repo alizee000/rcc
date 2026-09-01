@@ -150,6 +150,22 @@ export const inviteToBooking = mutation({
         status: "PENDING",
         invitedAt: Date.now(),
       });
+      
+      const booking = await ctx.db.get(args.bookingId);
+      if (booking) {
+        const venue = await ctx.db.get(booking.venueId);
+        let user = await ctx.db.query("users").filter(q => q.eq(q.field("clerkId"), args.inviterId)).first();
+        const userName = user ? user.name : "A racer";
+        
+        await ctx.db.insert("notifications", {
+          userId: args.inviteeId,
+          title: "Booking Invite",
+          message: `${userName} invited you to a race session at ${venue?.name || 'a track'}.`,
+          link: `/bookings`,
+          isRead: false,
+          createdAt: Date.now(),
+        });
+      }
     }
 
     return { success: true };

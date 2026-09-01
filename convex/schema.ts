@@ -147,4 +147,13 @@ export default defineSchema({
     text: v.string(),
     createdAt: v.number(),
   }).index("by_meetup", ["meetupId"]),
+
+  notifications: defineTable({
+    userId: v.string(),
+    title: v.string(),
+    message: v.string(),
+    link: v.optional(v.string()),
+    isRead: v.boolean(),
+    createdAt: v.number(),
+  }).index("by_user", ["userId"]),
 });

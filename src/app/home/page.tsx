@@ -6,6 +6,7 @@ import { MapPin, Bell, User, Search, Star, Clock, Navigation, PlaySquare } from 
 import { useQuery } from "convex/react";
 // @ts-ignore
 import { api } from "../../../convex/_generated/api";
+import NotificationBell from '../../components/NotificationBell';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -34,9 +35,7 @@ export default function Home() {
           <div className={styles.locationText}>Bengaluru, KA</div>
         </div>
         <div className={styles.actions}>
-          <Link href="/notifications" className={styles.iconBtn}>
-            <Bell size={20} />
-          </Link>
+          <NotificationBell />
           <Link href="/profile" className={styles.iconBtn}>
             <User size={20} />
           </Link>
