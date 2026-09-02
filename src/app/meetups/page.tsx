@@ -27,7 +27,7 @@ export default function MeetupsFeed() {
             <p style={{ fontSize: 14, marginTop: 8 }}>Be the first to host one!</p>
           </div>
         ) : (
-          meetups.map((meetup) => {
+          meetups.filter((m: any) => m.venue).map((meetup: any) => {
             const joinedCount = meetup.participants.filter((p: any) => p.status === "JOINED").length;
             const isFull = joinedCount >= meetup.maxPlayers;
             

@@ -26,15 +26,31 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [address, setAddress] = useState("Bengaluru, KA");
 
   useEffect(() => {
     if (typeof window !== 'undefined' && 'geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setUserLocation({ lat, lng });
+
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+            const data = await res.json();
+            if (data && data.address) {
+              const locality = data.address.neighbourhood || data.address.suburb || data.address.village || data.address.town || data.address.city_district || "";
+              const city = data.address.city || data.address.state_district || data.address.state || "Bengaluru";
+              if (locality) {
+                setAddress(`${locality}, ${city}`);
+              } else {
+                setAddress(city);
+              }
+            }
+          } catch (e) {
+            console.error("Failed to fetch address", e);
+          }
         },
         (error) => {
           console.error("Error getting location:", error);
@@ -73,7 +89,7 @@ export default function Home() {
       <header className={styles.header}>
         <div className={styles.location}>
           <MapPin size={18} className="text-gradient" />
-          <div className={styles.locationText}>Bengaluru, KA</div>
+          <div className={styles.locationText}>{address}</div>
         </div>
         <div className={styles.actions}>
           <NotificationBell />

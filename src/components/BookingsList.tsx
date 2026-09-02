@@ -101,7 +101,19 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
                 >
                   <QrCode size={16} /> View Pass
                 </button>
-                <button className="btn-secondary" style={{ flex: 1, padding: "8px" }}>
+                <button 
+                  className="btn-secondary" 
+                  style={{ flex: 1, padding: "8px" }}
+                  onClick={() => {
+                    if (b.venue?.lat && b.venue?.lng) {
+                      window.open(`https://www.google.com/maps/dir/?api=1&destination=${b.venue.lat},${b.venue.lng}`, "_blank");
+                    } else if (b.venue?.address) {
+                      window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(b.venue.address)}`, "_blank");
+                    } else {
+                      window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(b.venue?.name || "Bengaluru")}`, "_blank");
+                    }
+                  }}
+                >
                   Directions
                 </button>
               </div>

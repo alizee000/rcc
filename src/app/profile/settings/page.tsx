@@ -30,6 +30,7 @@ export default function ProfileSettingsPage() {
 
       <div style={{ width: "100%" }}>
         <UserProfile 
+          routing="hash"
           appearance={{
             elements: {
               rootBox: {
