@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "convex/react";
+import { toast } from "sonner";
 import { Check, X } from "lucide-react";
 // @ts-ignore
 import { api } from "../../convex/_generated/api";
@@ -21,7 +22,7 @@ export default function ManageRequestButtons({ participantId }: { participantId:
       await approve({ participantId: participantId as Id<"meetupParticipants"> });
       router.refresh();
     } catch (e: any) {
-      alert("Failed to approve");
+      toast.error("Failed to approve");
     }
     setLoading(false);
   };
@@ -32,7 +33,7 @@ export default function ManageRequestButtons({ participantId }: { participantId:
       await decline({ participantId: participantId as Id<"meetupParticipants"> });
       router.refresh();
     } catch (e: any) {
-      alert("Failed to decline");
+      toast.error("Failed to decline");
     }
     setLoading(false);
   };

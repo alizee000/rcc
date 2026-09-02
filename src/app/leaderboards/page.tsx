@@ -18,35 +18,23 @@ function formatTime(ms: number) {
 
 export default async function LeaderboardsPage() {
   const lapTimes = await fetchQuery(api.lapTimes.getLeaderboards);
-  const mainVenue = { name: "Electronic City RC Raceway" }; 
-  const track = { name: "Main Circuit" };
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <div>
-          <h1 className={styles.title}>Global Leaderboard</h1>
-          <div className={styles.subtitle}>
-            <MapPin size={14} /> {mainVenue?.name} - {track?.name}
-          </div>
-        </div>
-        <Trophy size={32} color="var(--warning)" />
-      </header>
-
       <LeaderboardFilters />
 
       <div className={styles.leaderboardList}>
         {lapTimes.map((lap, index) => {
           const isTop3 = index < 3;
-          let medalColor = "";
-          if (index === 0) medalColor = "#FFD700"; // Gold
-          else if (index === 1) medalColor = "#C0C0C0"; // Silver
-          else if (index === 2) medalColor = "#CD7F32"; // Bronze
+          let rankIcon = <span style={{ padding: "0 6px" }}>{index + 1}</span>;
+          if (index === 0) rankIcon = <span>👽</span>; // Alien tier
+          else if (index === 1) rankIcon = <span>🚀</span>; // Rocket tier
+          else if (index === 2) rankIcon = <span>🔥</span>; // Fire tier
 
           return (
             <Link href={`/driver/${lap.user.id}`} key={lap.id} className={`${styles.row} ${isTop3 ? styles.rowTop3 : ''}`}>
-              <div className={styles.rank}>
-                {isTop3 ? <Medal size={20} color={medalColor} /> : <span style={{ padding: "0 6px" }}>{index + 1}</span>}
+              <div className={styles.rank} style={{ fontSize: isTop3 ? 24 : 16 }}>
+                {rankIcon}
               </div>
               
               <div className={styles.driverInfo}>

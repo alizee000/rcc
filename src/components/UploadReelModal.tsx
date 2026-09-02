@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { X, UploadCloud, Loader2 } from "lucide-react";
+import { X, Upload, Loader2, Video } from "lucide-react";
+import { toast } from "sonner";
 import { useMutation } from "convex/react";
 // @ts-ignore
 import { api } from "../../convex/_generated/api";
@@ -28,7 +29,7 @@ export default function UploadReelModal({ onClose }: Props) {
     const selected = e.target.files?.[0];
     if (selected) {
       if (selected.size > 50 * 1024 * 1024) {
-        alert("File too large. Max 50MB.");
+        toast.error("File too large. Max 50MB.");
         return;
       }
       setFile(selected);
@@ -64,7 +65,7 @@ export default function UploadReelModal({ onClose }: Props) {
       onClose();
     } catch (error) {
       console.error("Upload failed:", error);
-      alert("Upload failed. Please try again.");
+      toast.error("Upload failed. Please try again.");
     } finally {
       setIsUploading(false);
     }
@@ -94,7 +95,7 @@ export default function UploadReelModal({ onClose }: Props) {
                   className={styles.uploadBox} 
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <UploadCloud size={40} className={styles.uploadIcon} />
+                  <Upload size={40} className={styles.uploadIcon} />
                   <div className={styles.uploadText}>Select a video file</div>
                   <div className={styles.uploadSub}>MP4 or MOV, max 50MB</div>
                 </div>

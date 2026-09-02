@@ -31,9 +31,9 @@ export default function PaymentSuccessPage() {
         <div className={styles.checkWrapper}>
           <Check size={64} />
         </div>
-        <h1 className={styles.title}>Payment Successful!</h1>
+        <h1 className={styles.title}>Secured the bag 🏁</h1>
         <p className={styles.subtitle}>
-          Your race session is confirmed. Get ready to hit the track!
+          See you on the track. Don't be late.
         </p>
         
         <div className={styles.qrPlaceholder}>

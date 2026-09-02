@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { ArrowLeft, Check, QrCode, CheckCircle2 } from "lucide-react";
 import { useMutation } from "convex/react";
 // @ts-ignore
@@ -68,7 +69,7 @@ export default function BookingWizard({ venue, user }: Props) {
     } catch (error) {
       console.error(error);
       setLoading(false);
-      alert("Failed to proceed to payment");
+      toast.error("Failed to proceed to payment");
     }
   };
 

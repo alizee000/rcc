@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useMutation } from "convex/react";
+import { toast } from "sonner";
 // @ts-ignore
 import { api } from "../../convex/_generated/api";
 
@@ -14,7 +15,7 @@ export default function JoinMeetupButton({ meetupId, initialStatus, isFull, user
 
   const handleJoin = async () => {
     if (!userId) {
-      alert("Please log in to join.");
+      toast.error("Please log in to join.");
       return;
     }
     
@@ -27,7 +28,7 @@ export default function JoinMeetupButton({ meetupId, initialStatus, isFull, user
       router.refresh();
     } catch (error: any) {
       console.error(error);
-      alert(error.message || "Failed to join meetup");
+      toast.error(error.message || "Failed to join meetup");
     }
     setLoading(false);
   };

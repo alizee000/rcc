@@ -2,24 +2,30 @@
 
 :root {
   /* Racing Brand Colors */
-  --bg-primary: #121212;
-  --bg-secondary: #1E1E24;
-  --bg-card: #2A2A35;
+  --bg-primary: #020205; /* Deep cyber space */
+  --bg-secondary: #0A0A12;
+  --bg-card: rgba(10, 10, 18, 0.65);
+  --bg-overlay: rgba(0, 0, 0, 0.9);
+  
   --text-primary: #FFFFFF;
-  --text-secondary: #A0A0B0;
+  --text-secondary: #9FA1B4;
+  --text-muted: #5B5D7A;
   
-  --accent-primary: #FF2A2A; /* Racing Red */
-  --accent-hover: #D01C1C;
-  --accent-secondary: #00E5FF; /* Neon Cyan for techy contrast */
+  --accent-primary: #FF1053; /* Hyper Neon Pink/Red */
+  --accent-primary-hover: #FF356F;
+  --accent-secondary: #00FFCC; /* Cyber Cyan */
   
-  --success: #00E676;
-  --warning: #FFC400;
-  --error: #FF1744;
-
-  --border: #333344;
-  --border-light: #444455;
+  --success: #39FF14; /* Toxic Green */
+  --warning: #FFE600; /* Electric Yellow */
+  --error: #FF1053;
   
-  /* Layout */
+  --border: rgba(255, 255, 255, 0.05);
+  --border-light: rgba(255, 255, 255, 0.12);
+  
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.8);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.95);
+  --shadow-glow: 0 0 24px rgba(255, 16, 83, 0.5);
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 24px;

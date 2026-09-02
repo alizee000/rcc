@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useMutation } from "convex/react";
 import { Calendar, Clock, MapPin, QrCode, X, Check, UserPlus, MessageSquare, Globe } from "lucide-react";
+import { toast } from "sonner";
 import styles from "../app/bookings/page.module.css";
 import InviteToBookingModal from "./InviteToBookingModal";
 import BookingLobbyModal from "./BookingLobbyModal";
@@ -29,7 +30,7 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
       // Depending on implementation, you might want to refresh router or let convex react update
       window.location.reload(); // Simple refresh for now to update Server Components
     } catch (e) {
-      alert("Failed to accept");
+      toast.error("Failed to accept");
     }
   };
 
@@ -38,7 +39,7 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
       await declineInvite({ inviteId: inviteId as any });
       window.location.reload();
     } catch (e) {
-      alert("Failed to decline");
+      toast.error("Failed to decline");
     }
   };
 
@@ -247,8 +248,8 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
           {displayBookings.length === 0 && (
             <div className={styles.emptyState}>
               <Calendar size={48} style={{ opacity: 0.2, marginBottom: 16 }} />
-              <h3>No {activeTab === "UPCOMING" ? "upcoming" : "past"} bookings</h3>
-              <p>You {activeTab === "UPCOMING" ? "have no races scheduled" : "haven't completed any races yet"}.</p>
+              <h3>{activeTab === "UPCOMING" ? "Zero track time? That's an L 📉" : "Bro hasn't raced yet 💀"}</h3>
+              <p>{activeTab === "UPCOMING" ? "Book a session and stop lacking." : "Get out there and post a lap time."}</p>
             </div>
           )}
         </div>

@@ -1,35 +1,50 @@
+"use client";
+
 import { SignIn, SignUp } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+import { redirect, useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
-export default async function LandingPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
-  const { userId } = await auth();
+export default function LandingPage() {
+  const { userId } = useAuth();
   if (userId) {
     redirect("/home");
   }
 
-  const params = await searchParams;
-  const isSignUp = params.sign_up === "true";
+  const searchParams = useSearchParams();
+  const isSignUp = searchParams.get("sign_up") === "true";
 
   return (
     <main className={styles.container}>
-      <div className={styles.heroBanner}>
-        <div className={styles.overlay} />
-      </div>
+      <div className={styles.heroBanner} />
+      <div className={styles.overlay} />
       
       <div className={styles.content}>
-        <div className={styles.branding}>
-          <h1 className="text-gradient" style={{ fontSize: "3.5rem", marginBottom: "0.5rem", textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}>RC RUSH</h1>
-          <p style={{ fontSize: "1.2rem", color: "white", maxWidth: "500px", margin: "0 auto", textShadow: "0 2px 10px rgba(0,0,0,0.5)", fontWeight: 500 }}>
-            Book. Race. Compete. Repeat.
-          </p>
-        </div>
+        <motion.div 
+          className={styles.branding}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <motion.h1 
+            className={styles.glitchTitle}
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            RC RUSH
+          </motion.h1>
+          <motion.p 
+            style={{ fontSize: "1.2rem", color: "var(--text-secondary)", maxWidth: "500px", margin: "0 auto", textShadow: "0 2px 10px rgba(0,0,0,0.8)", fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            Zero excuses. Just pure speed.
+          </motion.p>
+        </motion.div>
 
         <div className={styles.authBox}>
           {isSignUp ? (

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Heart, MessageCircle, Share2, Plus, Film, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Flame, MessageCircle, Share2, Plus, Film, Volume2, VolumeX } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 // @ts-ignore
 import { api } from "../../../convex/_generated/api";
@@ -50,15 +50,15 @@ export default function ReelsPage() {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <Link href="/home" className={styles.backBtn}>
-          <ArrowLeft size={24} color="white" />
-        </Link>
-        <h1 className={styles.title}>RC Racing Reels</h1>
-        <button onClick={() => setShowUpload(true)} className={styles.headerUploadBtn}>
-          <Plus size={24} color="white" />
-        </button>
-      </header>
+      {/* Upload FAB */}
+      <button 
+        onClick={() => setShowUpload(true)} 
+        className={styles.headerUploadBtn}
+        style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 90 }}
+      >
+        <Plus size={24} color="white" />
+      </button>
+
 
       {reels === undefined ? (
         <div className={styles.emptyState}>
@@ -88,7 +88,7 @@ export default function ReelsPage() {
                 onClick={() => setIsMuted(!isMuted)}
                 style={{
                   position: 'absolute',
-                  top: '80px',
+                  top: '16px',
                   right: '16px',
                   background: 'rgba(0,0,0,0.5)',
                   border: 'none',
@@ -120,8 +120,8 @@ export default function ReelsPage() {
                 </div>
                 
                 <div className={styles.actions}>
-                  <button className={styles.actionBtn} onClick={() => handleLike(reel._id)}>
-                    <Heart size={28} color={reel.hasLiked ? "#ff2a2a" : "white"} fill={reel.hasLiked ? "#ff2a2a" : "transparent"} />
+                    <button className={styles.actionBtn} onClick={() => handleLike(reel._id)}>
+                    <Flame size={28} color={reel.hasLiked ? "#ff5a00" : "white"} fill={reel.hasLiked ? "#ff5a00" : "transparent"} />
                     <span>{reel.likes || 0}</span>
                   </button>
                   <button className={styles.actionBtn} onClick={() => setActiveCommentsReel(reel._id)}>

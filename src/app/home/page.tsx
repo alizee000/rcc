@@ -49,11 +49,11 @@ export default function Home() {
               }
             }
           } catch (e) {
-            console.error("Failed to fetch address", e);
+            console.warn("Failed to fetch address");
           }
         },
         (error) => {
-          console.error("Error getting location:", error);
+          console.warn("Location permission denied or unavailable. Using default.");
           // Default to a central point in Bengaluru if permission denied/error
           setUserLocation({ lat: 12.9716, lng: 77.5946 });
         }
@@ -85,21 +85,7 @@ export default function Home() {
 
   return (
     <main className={styles.home}>
-      {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.location}>
-          <MapPin size={18} className="text-gradient" />
-          <div className={styles.locationText}>{address}</div>
-        </div>
-        <div className={styles.actions}>
-          <NotificationBell />
-          <Link href="/profile" className={styles.iconBtn}>
-            <User size={20} />
-          </Link>
-        </div>
-      </header>
-
-      {/* Search Bar */}
+      {/* Categories */}
       <div className={styles.searchContainer}>
         <div className={styles.searchBar}>
           <Search size={18} color="var(--text-secondary)" />

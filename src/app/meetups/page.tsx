@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { Plus, MapPin, Calendar, Users, Trophy, Clock } from "lucide-react";
 import { useQuery } from "convex/react";
+import { motion } from "framer-motion";
 // @ts-ignore
 import { api } from "../../../convex/_generated/api";
 import styles from "./page.module.css";
+import { SkeletonCard } from "@/components/Skeleton";
 
 export default function MeetupsFeed() {
-  const meetups = useQuery(api.meetups.getMeetups) || [];
+  const meetups = useQuery(api.meetups.getMeetups);
 
   return (
     <div className={styles.container}>
@@ -20,80 +22,101 @@ export default function MeetupsFeed() {
       </header>
 
       <div>
-        {meetups.length === 0 ? (
+        {meetups === undefined ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
+        ) : meetups.length === 0 ? (
           <div style={{ textAlign: "center", padding: 40, color: "var(--text-secondary)" }}>
-            <Users size={48} style={{ opacity: 0.5, marginBottom: 16 }} />
-            <p>No upcoming meetups found.</p>
-            <p style={{ fontSize: 14, marginTop: 8 }}>Be the first to host one!</p>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>💀</div>
+            <p style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)" }}>It's dead out here.</p>
+            <p style={{ fontSize: 14, marginTop: 8 }}>Be the first to host a race and get this bread.</p>
           </div>
         ) : (
-          meetups.filter((m: any) => m.venue).map((meetup: any) => {
-            const joinedCount = meetup.participants.filter((p: any) => p.status === "JOINED").length;
-            const isFull = joinedCount >= meetup.maxPlayers;
-            
-            return (
-              <Link href={`/meetups/${meetup.id}`} key={meetup.id} className={styles.meetupCard}>
-                <div className={styles.cardHeader}>
-                  <img src={meetup.venue.imageUrl || undefined} alt={meetup.venue.name} className={styles.cardImg} />
-                  <div className={styles.overlay} />
-                  <div style={{ position: 'absolute', top: 12, right: 12, backgroundColor: 'var(--accent-primary)', color: 'white', fontSize: 11, fontWeight: 700, padding: '4px 8px', borderRadius: 4, zIndex: 2 }}>{joinedCount}/{meetup.maxPlayers} Racers</div>
-                  <div className={styles.cardTitle} style={{ zIndex: 2 }}>{meetup.title}</div>
-                </div>
-                
-                <div className={styles.cardContent}>
-                  <div style={{ display: "flex", gap: 16, marginBottom: 16, marginTop: 4 }}>
-                    <div style={{ 
-                      backgroundColor: "rgba(255, 42, 42, 0.1)",
-                      border: "1px solid rgba(255, 42, 42, 0.2)",
-                      borderRadius: "var(--radius-sm)",
-                      padding: "8px 12px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      minWidth: 64
-                    }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: "var(--accent-primary)", textTransform: "uppercase", letterSpacing: 0.5 }}>
-                        {new Date(meetup.date).toLocaleDateString('en-US', { month: 'short' })}
-                      </span>
-                      <span style={{ fontSize: 22, fontWeight: 800, color: "var(--text-primary)", lineHeight: 1.1 }}>
-                        {new Date(meetup.date).getDate()}
-                      </span>
-                      <span style={{ fontSize: 10, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase" }}>
-                        {new Date(meetup.date).toLocaleDateString('en-US', { weekday: 'short' })}
-                      </span>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ staggerChildren: 0.1 }}
+            style={{ display: "flex", flexDirection: "column", gap: 16 }}
+          >
+            {meetups.filter((m: any) => m.venue).map((meetup: any) => {
+              const joinedCount = meetup.participants.filter((p: any) => p.status === "JOINED").length;
+              const isFull = joinedCount >= meetup.maxPlayers;
+              
+              return (
+                <motion.div
+                  key={meetup.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{ scale: 0.98 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link href={`/meetups/${meetup.id}`} className={styles.meetupCard}>
+                    <div className={styles.cardHeader}>
+                      <img src={meetup.venue.imageUrl || undefined} alt={meetup.venue.name} className={styles.cardImg} />
+                      <div className={styles.overlay} />
+                      <div style={{ position: 'absolute', top: 12, right: 12, backgroundColor: 'var(--accent-primary)', color: 'white', fontSize: 11, fontWeight: 700, padding: '4px 8px', borderRadius: 4, zIndex: 2 }}>{joinedCount}/{meetup.maxPlayers} Racers</div>
+                      <div className={styles.cardTitle} style={{ zIndex: 2 }}>{meetup.title}</div>
                     </div>
                     
-                    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 8 }}>
-                      <div className={styles.infoRow} style={{ marginBottom: 0, fontWeight: 600, color: "var(--text-primary)", fontSize: 15 }}>
-                        <Clock size={16} color="var(--accent-primary)" style={{ flexShrink: 0 }} />
-                        {meetup.time}
+                    <div className={styles.cardContent}>
+                      <div style={{ display: "flex", gap: 16, marginBottom: 16, marginTop: 4 }}>
+                        <div style={{ 
+                          backgroundColor: "rgba(255, 42, 42, 0.1)",
+                          border: "1px solid rgba(255, 42, 42, 0.2)",
+                          borderRadius: "var(--radius-sm)",
+                          padding: "8px 12px",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minWidth: 64
+                        }}>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: "var(--accent-primary)", textTransform: "uppercase", letterSpacing: 0.5 }}>
+                            {new Date(meetup.date).toLocaleDateString('en-US', { month: 'short' })}
+                          </span>
+                          <span style={{ fontSize: 22, fontWeight: 800, color: "var(--text-primary)", lineHeight: 1.1 }}>
+                            {new Date(meetup.date).getDate()}
+                          </span>
+                          <span style={{ fontSize: 10, fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase" }}>
+                            {new Date(meetup.date).toLocaleDateString('en-US', { weekday: 'short' })}
+                          </span>
+                        </div>
+                        
+                        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 8 }}>
+                          <div className={styles.infoRow} style={{ marginBottom: 0, fontWeight: 600, color: "var(--text-primary)", fontSize: 15 }}>
+                            <Clock size={16} color="var(--accent-primary)" style={{ flexShrink: 0 }} />
+                            {meetup.time}
+                          </div>
+                          <div className={styles.infoRow} style={{ marginBottom: 0 }}>
+                            <MapPin size={16} style={{ flexShrink: 0 }} /> {meetup.venue.name}, {meetup.venue.city}
+                          </div>
+                          <div className={styles.infoRow} style={{ marginBottom: 0 }}>
+                            <Trophy size={16} style={{ flexShrink: 0 }} /> {meetup.skillLevel}
+                          </div>
+                        </div>
                       </div>
-                      <div className={styles.infoRow} style={{ marginBottom: 0 }}>
-                        <MapPin size={16} style={{ flexShrink: 0 }} /> {meetup.venue.name}, {meetup.venue.city}
-                      </div>
-                      <div className={styles.infoRow} style={{ marginBottom: 0 }}>
-                        <Trophy size={16} style={{ flexShrink: 0 }} /> {meetup.skillLevel}
+                      
+                      <div className={styles.footer}>
+                        <div className={styles.hostInfo}>
+                          <div className={styles.avatar}>
+                            {meetup.host.name.substring(0, 2).toUpperCase()}
+                          </div>
+                          <span>Hosted by <strong>{meetup.host.name}</strong></span>
+                        </div>
+                        
+                        <div style={{ fontSize: 12, fontWeight: 600, color: isFull ? "var(--accent-primary)" : "var(--success)" }}>
+                          {joinedCount} / {meetup.maxPlayers} Joined
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className={styles.footer}>
-                    <div className={styles.hostInfo}>
-                      <div className={styles.avatar}>
-                        {meetup.host.name.substring(0, 2).toUpperCase()}
-                      </div>
-                      <span>Hosted by <strong>{meetup.host.name}</strong></span>
-                    </div>
-                    
-                    <div style={{ fontSize: 12, fontWeight: 600, color: isFull ? "var(--accent-primary)" : "var(--success)" }}>
-                      {joinedCount} / {meetup.maxPlayers} Joined
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            );
-          })
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </motion.div>
         )}
       </div>
     </div>

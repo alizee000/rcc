@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Share2, MapPin, Loader2, Check } from "lucide-react";
 import * as htmlToImage from "html-to-image";
+import { toast } from "sonner";
 import styles from "./ShareLapButton.module.css";
 
 function formatTime(ms: number) {
@@ -62,7 +63,7 @@ export default function ShareLapButton({ lap, driverName }: { lap: any, driverNa
         console.log('Share canceled by user');
       } else {
         console.error("Error generating or sharing image:", error);
-        alert("Failed to share image. Please try again.");
+        toast.error("Failed to share image. Please try again.");
       }
     } finally {
       setIsSharing(false);
