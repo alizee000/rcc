@@ -81,12 +81,18 @@ export const getUserBookings = query({
           })
         );
 
+        const existingMeetup = await ctx.db
+          .query("meetups")
+          .withIndex("by_bookingId", (q) => q.eq("bookingId", b._id))
+          .first();
+
         return {
           ...b,
           id: b._id,
           venue: venue ? { name: venue.name, imageUrl: venue.imageUrl } : null,
           experience: experience ? { name: experience.name } : null,
           sentInvites,
+          hasMeetup: !!existingMeetup,
         };
       })
     );

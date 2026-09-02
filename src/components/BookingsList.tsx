@@ -15,8 +15,10 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
   const [inviteModalBookingId, setInviteModalBookingId] = useState<string | null>(null);
   const [lobbyModalBooking, setLobbyModalBooking] = useState<any>(null);
   const [creatingMeetupFor, setCreatingMeetupFor] = useState<string | null>(null);
+  const [localMeetupState, setLocalMeetupState] = useState<Record<string, boolean>>({});
 
   const createMeetup = useMutation(api.meetups.createMeetupFromBooking);
+  const deleteMeetup = useMutation(api.meetups.deleteMeetupFromBooking);
 
   const acceptInvite = useMutation(api.bookings.acceptBookingInvite);
   const declineInvite = useMutation(api.bookings.declineBookingInvite);
@@ -74,7 +76,10 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
 
       { (activeTab === "UPCOMING" || activeTab === "PAST") && (
         <div>
-          {displayBookings.map((b) => (
+          {displayBookings.map((b) => {
+            const isMeetup = localMeetupState[b.id] !== undefined ? localMeetupState[b.id] : b.hasMeetup;
+            const isBusy = creatingMeetupFor === b.id;
+            return (
             <div key={b.id} className={styles.bookingCard}>
               <div className={`${styles.statusIndicator} ${b.status === "CONFIRMED" ? styles.statusConfirmed : styles.statusPending}`}></div>
               
@@ -106,17 +111,22 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
                       <span style={{ fontSize: 10, fontWeight: 500, color: "var(--text-secondary)" }}>Meetup</span>
                       <div 
                         onClick={async () => {
-                          if (creatingMeetupFor === b.id) return;
+                          if (isBusy) return;
                           setCreatingMeetupFor(b.id);
                           try {
-                            const res = await createMeetup({ bookingId: b.id });
-                            if (res.success) {
-                              alert("Successfully converted to Community Meetup!");
+                            if (isMeetup) {
+                              const res = await deleteMeetup({ bookingId: b.id });
+                              if (res.success || res.message === "Meetup not found.") {
+                                setLocalMeetupState(prev => ({ ...prev, [b.id]: false }));
+                              }
                             } else {
-                              alert(res.message || "Meetup already exists.");
+                              const res = await createMeetup({ bookingId: b.id });
+                              if (res.success || res.message === "Meetup already exists for this booking.") {
+                                setLocalMeetupState(prev => ({ ...prev, [b.id]: true }));
+                              }
                             }
                           } catch (err) {
-                            alert("Failed to create meetup.");
+                            // Silently ignore create/delete errors
                           } finally {
                             setCreatingMeetupFor(null);
                           }
@@ -125,10 +135,11 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
                           width: 24,
                           height: 14,
                           borderRadius: 7,
-                          backgroundColor: creatingMeetupFor === b.id ? "var(--accent-primary)" : "var(--bg-secondary)",
+                          backgroundColor: (isMeetup || isBusy) ? "var(--accent-primary)" : "var(--bg-secondary)",
                           position: "relative",
                           cursor: "pointer",
-                          transition: "background-color 0.2s"
+                          transition: "background-color 0.2s",
+                          opacity: isBusy ? 0.7 : 1
                         }}
                       >
                         <div style={{
@@ -138,7 +149,7 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
                           backgroundColor: "white",
                           position: "absolute",
                           top: 2,
-                          left: creatingMeetupFor === b.id ? 12 : 2,
+                          left: (isMeetup || isBusy) ? 12 : 2,
                           transition: "left 0.2s"
                         }} />
                       </div>
@@ -227,7 +238,8 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
                     </div>
                   )}
             </div>
-          ))}
+            );
+          })}
           {displayBookings.length === 0 && (
             <div className={styles.emptyState}>
               <Calendar size={48} style={{ opacity: 0.2, marginBottom: 16 }} />

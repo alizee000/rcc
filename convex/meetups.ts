@@ -303,11 +303,7 @@ export const createMeetupFromBooking = mutation({
 
     const existing = await ctx.db
       .query("meetups")
-      .withIndex("by_date", (q) => q.eq("date", booking.date))
-      .filter((q) => q.and(
-        q.eq(q.field("hostId"), booking.userId),
-        q.eq(q.field("time"), booking.time || "10:00 - 12:00")
-      ))
+      .withIndex("by_bookingId", (q) => q.eq("bookingId", booking._id))
       .first();
 
     if (existing) {
@@ -325,6 +321,7 @@ export const createMeetupFromBooking = mutation({
       time: booking.time || "10:00 - 12:00",
       venueId: booking.venueId,
       hostId: booking.userId,
+      bookingId: booking._id,
       maxPlayers: 10,
       skillLevel: "All Levels",
       status: "OPEN",
@@ -339,5 +336,37 @@ export const createMeetupFromBooking = mutation({
     });
 
     return { success: true, meetupId };
+  }
+});
+
+export const deleteMeetupFromBooking = mutation({
+  args: { bookingId: v.id("bookings") },
+  handler: async (ctx, args) => {
+    const booking = await ctx.db.get(args.bookingId);
+    if (!booking) throw new Error("Booking not found");
+
+    const existing = await ctx.db
+      .query("meetups")
+      .withIndex("by_bookingId", (q) => q.eq("bookingId", booking._id))
+      .first();
+
+    if (!existing) {
+      return { success: false, message: "Meetup not found." };
+    }
+
+    // Delete participants
+    const participants = await ctx.db
+      .query("meetupParticipants")
+      .withIndex("by_meetup", (q) => q.eq("meetupId", existing._id))
+      .collect();
+    
+    for (const p of participants) {
+      await ctx.db.delete(p._id);
+    }
+
+    // Delete meetup
+    await ctx.db.delete(existing._id);
+
+    return { success: true };
   }
 });

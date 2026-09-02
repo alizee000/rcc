@@ -136,11 +136,14 @@ export default defineSchema({
     time: v.string(),
     venueId: v.id("venues"),
     hostId: v.string(),
+    bookingId: v.optional(v.id("bookings")),
     maxPlayers: v.number(),
     skillLevel: v.string(),
     status: v.string(), // "OPEN", "FULL", "COMPLETED", "CANCELLED"
     createdAt: v.number(),
-  }).index("by_date", ["date"]),
+  })
+    .index("by_date", ["date"])
+    .index("by_bookingId", ["bookingId"]),
 
   meetupParticipants: defineTable({
     meetupId: v.id("meetups"),
