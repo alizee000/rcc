@@ -40,8 +40,12 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
     }
   };
 
-  // If there are no bookings, fallback to an empty array
-  const displayBookings = bookings.length > 0 ? bookings : [];
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const upcomingBookings = bookings.filter(b => new Date(b.date) >= now);
+  const pastBookings = bookings.filter(b => new Date(b.date) < now);
+
+  const displayBookings = activeTab === "PAST" ? pastBookings : upcomingBookings;
 
   return (
     <div className={styles.container}>
@@ -68,7 +72,7 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
         </button>
       </div>
 
-      {activeTab === "UPCOMING" && (
+      { (activeTab === "UPCOMING" || activeTab === "PAST") && (
         <div>
           {displayBookings.map((b) => (
             <div key={b.id} className={styles.bookingCard}>
@@ -227,8 +231,8 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
           {displayBookings.length === 0 && (
             <div className={styles.emptyState}>
               <Calendar size={48} style={{ opacity: 0.2, marginBottom: 16 }} />
-              <h3>No upcoming bookings</h3>
-              <p>You have no races scheduled.</p>
+              <h3>No {activeTab === "UPCOMING" ? "upcoming" : "past"} bookings</h3>
+              <p>You {activeTab === "UPCOMING" ? "have no races scheduled" : "haven't completed any races yet"}.</p>
             </div>
           )}
         </div>
@@ -288,13 +292,7 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
         </div>
       )}
 
-      {activeTab === "PAST" && (
-        <div className={styles.emptyState}>
-          <Calendar size={48} style={{ opacity: 0.2, marginBottom: 16 }} />
-          <h3>No past bookings</h3>
-          <p>You haven't completed any races yet.</p>
-        </div>
-      )}
+
 
       {/* Digital Pass Modal */}
       {showPass && (
