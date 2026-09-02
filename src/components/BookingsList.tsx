@@ -106,7 +106,7 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
                       {b.status}
                     </div>
                   </div>
-                  {b.userId === user.id && (
+                  {b.userId === user.id && activeTab !== "PAST" && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <span style={{ fontSize: 10, fontWeight: 500, color: "var(--text-secondary)" }}>Meetup</span>
                       <div 
@@ -174,23 +174,27 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
               </div>
               
               <div style={{ display: 'flex', gap: 6, marginTop: 16 }}>
-                <button 
-                  className="btn-primary" 
-                  style={{ flex: 1, padding: "6px 4px", display: "flex", justifyContent: "center", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 500, borderRadius: 6 }}
-                  onClick={() => setShowPass(b)}
-                >
-                  <QrCode size={12} /> View Pass
-                </button>
+                {activeTab !== "PAST" && (
+                  <button 
+                    className="btn-primary" 
+                    style={{ flex: 1, padding: "6px 4px", display: "flex", justifyContent: "center", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 500, borderRadius: 6 }}
+                    onClick={() => setShowPass(b)}
+                  >
+                    <QrCode size={12} /> View Pass
+                  </button>
+                )}
 
                 {b.userId === user.id && (
                   <>
-                    <button 
-                      className="btn-secondary" 
-                      style={{ flex: 1, padding: "6px 4px", display: "flex", justifyContent: "center", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 500, borderRadius: 6, borderColor: "var(--border)", color: "var(--text-secondary)" }}
-                      onClick={() => setInviteModalBookingId(b.id)}
-                    >
-                      <UserPlus size={12} /> Invite Racers
-                    </button>
+                    {activeTab !== "PAST" && (
+                      <button 
+                        className="btn-secondary" 
+                        style={{ flex: 1, padding: "6px 4px", display: "flex", justifyContent: "center", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 500, borderRadius: 6, borderColor: "var(--border)", color: "var(--text-secondary)" }}
+                        onClick={() => setInviteModalBookingId(b.id)}
+                      >
+                        <UserPlus size={12} /> Invite Racers
+                      </button>
+                    )}
                     <button 
                       className="btn-secondary" 
                       style={{ flex: 1, padding: "6px 4px", display: "flex", justifyContent: "center", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 500, borderRadius: 6, borderColor: "var(--border)", color: "var(--text-primary)", backgroundColor: "rgba(255,42,42,0.05)" }}
@@ -202,7 +206,7 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
                 )}
               </div>
                   
-                  {b.userId === user.id && b.sentInvites && b.sentInvites.length > 0 && (
+                  {b.userId === user.id && b.sentInvites && b.sentInvites.length > 0 && activeTab !== "PAST" && (
                     <div style={{ marginTop: 16, backgroundColor: 'rgba(255,255,255,0.02)', padding: 12, borderRadius: 12, border: '1px solid var(--border)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                         <h4 style={{ fontSize: 12, textTransform: 'uppercase', color: 'var(--text-secondary)', margin: 0 }}>Invited Racers ({b.sentInvites.length})</h4>

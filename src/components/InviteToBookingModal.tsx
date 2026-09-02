@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
-import { X, Search, UserPlus } from "lucide-react";
+import { X, Search, UserPlus, Check } from "lucide-react";
 // @ts-ignore
 import { api } from "../../convex/_generated/api";
 // @ts-ignore
@@ -11,18 +11,18 @@ import { Id } from "../../convex/_generated/dataModel";
 
 export default function InviteToBookingModal({ bookingId, inviterId, onClose }: { bookingId: string, inviterId: string, onClose: () => void }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [invitedUsers, setInvitedUsers] = useState<Set<string>>(new Set());
   const users = useQuery(api.users.getUsers) || [];
   const inviteToBooking = useMutation(api.bookings.inviteToBooking);
   const router = useRouter();
 
   const handleInvite = async (userId: string) => {
+    if (invitedUsers.has(userId)) return;
     try {
       await inviteToBooking({ bookingId: bookingId as Id<"bookings">, inviterId, inviteeId: userId });
-      alert("Invite sent!");
-      // Don't close immediately so they can invite more people
+      setInvitedUsers(prev => new Set(prev).add(userId));
     } catch (e) {
-      console.error(e);
-      alert("Failed to send invite");
+      console.error("Failed to send invite", e);
     }
   };
 
@@ -70,16 +70,25 @@ export default function InviteToBookingModal({ bookingId, inviterId, onClose }: 
                       </div>
                       <div style={{ fontWeight: 600 }}>{user.name}</div>
                     </div>
-                    <button 
-                      onClick={() => handleInvite(user.clerkId)} 
-                      style={{ 
-                        padding: "6px 12px", borderRadius: "var(--radius-full)", 
-                        backgroundColor: "var(--accent-primary)", color: "white", 
-                        fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 
-                      }}
-                    >
-                      <UserPlus size={14} /> Invite
-                    </button>
+                    {(() => {
+                      const isInvited = invitedUsers.has(user.clerkId);
+                      return (
+                        <button 
+                          onClick={() => handleInvite(user.clerkId)} 
+                          style={{ 
+                            padding: "6px 12px", borderRadius: "var(--radius-full)", 
+                            backgroundColor: isInvited ? "var(--success)" : "var(--accent-primary)", color: "white", 
+                            fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", gap: 4,
+                            cursor: isInvited ? "default" : "pointer",
+                            opacity: isInvited ? 0.8 : 1,
+                            border: "none"
+                          }}
+                        >
+                          {isInvited ? <Check size={14} /> : <UserPlus size={14} />} 
+                          {isInvited ? "Sent" : "Invite"}
+                        </button>
+                      );
+                    })()}
                   </div>
                 )
             })}
