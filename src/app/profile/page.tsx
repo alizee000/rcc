@@ -56,6 +56,24 @@ export default async function ProfilePage() {
       overflowX: "hidden"
     }}>
       <header style={{ marginBottom: 40, textAlign: "center", position: "relative", zIndex: 10 }}>
+        <Link href="/home" style={{
+          position: "absolute",
+          left: 0,
+          top: "50%",
+          transform: "translateY(-50%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: 40,
+          height: 40,
+          borderRadius: "50%",
+          backgroundColor: "rgba(0,0,0,0.4)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255,255,255,0.1)",
+          color: "white"
+        }}>
+          <ChevronRight size={24} style={{ transform: "rotate(180deg)" }} />
+        </Link>
         <div style={{ 
           width: 90, 
           height: 90, 
