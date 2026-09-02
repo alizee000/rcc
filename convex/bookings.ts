@@ -108,6 +108,7 @@ export const createBooking = mutation({
         age: v.number(),
       })
     ),
+    makeMeetup: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const qrCode = `RC-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
@@ -130,6 +131,35 @@ export const createBooking = mutation({
         bookingId,
         name: player.name,
         age: player.age,
+      });
+    }
+
+    if (args.makeMeetup) {
+      // Find the user's name or fallback to "Driver"
+      const users = await ctx.db.query("users").collect();
+      // Users in our DB might not have clerkId field mapped nicely, but we can try filtering or just default.
+      // Wait, let's just default to "A Driver" for now, or if we can find the user.
+      const hostUser = users.find(u => u.clerkId === args.userId || u._id === args.userId);
+      const userName = hostUser?.name || "A Driver";
+      
+      const meetupId = await ctx.db.insert("meetups", {
+        title: `${userName}'s Track Session`,
+        description: "Join me for an RC racing session! Open to all skill levels.",
+        date: args.date,
+        time: args.time,
+        venueId: args.venueId,
+        hostId: args.userId,
+        maxPlayers: 10,
+        skillLevel: "All Levels",
+        status: "OPEN",
+        createdAt: Date.now(),
+      });
+      
+      await ctx.db.insert("meetupParticipants", {
+        meetupId,
+        userId: args.userId,
+        status: "JOINED",
+        joinedAt: Date.now(),
       });
     }
 

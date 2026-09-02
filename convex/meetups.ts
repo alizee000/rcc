@@ -294,3 +294,50 @@ export const sendMessage = mutation({
     return { success: true };
   },
 });
+
+export const createMeetupFromBooking = mutation({
+  args: { bookingId: v.id("bookings") },
+  handler: async (ctx, args) => {
+    const booking = await ctx.db.get(args.bookingId);
+    if (!booking) throw new Error("Booking not found");
+
+    const existing = await ctx.db
+      .query("meetups")
+      .withIndex("by_date", (q) => q.eq("date", booking.date))
+      .filter((q) => q.and(
+        q.eq(q.field("hostId"), booking.userId),
+        q.eq(q.field("time"), booking.time || "10:00 - 12:00")
+      ))
+      .first();
+
+    if (existing) {
+      return { success: false, message: "Meetup already exists for this booking." };
+    }
+
+    const users = await ctx.db.query("users").collect();
+    const hostUser = users.find(u => u.clerkId === booking.userId || u._id === booking.userId);
+    const userName = hostUser?.name || "A Driver";
+
+    const meetupId = await ctx.db.insert("meetups", {
+      title: `${userName}'s Track Session`,
+      description: "Join me for an RC racing session! Open to all skill levels.",
+      date: booking.date,
+      time: booking.time || "10:00 - 12:00",
+      venueId: booking.venueId,
+      hostId: booking.userId,
+      maxPlayers: 10,
+      skillLevel: "All Levels",
+      status: "OPEN",
+      createdAt: Date.now(),
+    });
+
+    await ctx.db.insert("meetupParticipants", {
+      meetupId,
+      userId: booking.userId,
+      status: "JOINED",
+      joinedAt: Date.now(),
+    });
+
+    return { success: true, meetupId };
+  }
+});

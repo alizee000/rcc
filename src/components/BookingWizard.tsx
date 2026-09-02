@@ -27,10 +27,12 @@ export default function BookingWizard({ venue, user }: Props) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date(new Date().setHours(0,0,0,0)));
   const [startTimeHour, setStartTimeHour] = useState<number>(10);
   const [endTimeHour, setEndTimeHour] = useState<number>(11);
+  const [makeMeetup, setMakeMeetup] = useState(false);
   const [selectedCar, setSelectedCar] = useState<any>(null);
 
   const durationHours = endTimeHour - startTimeHour;
   const [players, setPlayers] = useState([{ name: user?.name || "" }]);
+
   const [loading, setLoading] = useState(false);
 
   const steps = [1, 2, 3, 4, 5];
@@ -57,7 +59,8 @@ export default function BookingWizard({ venue, user }: Props) {
         players: players.map(p => ({
           name: p.name,
           age: 18
-        }))
+        })),
+        makeMeetup,
       };
       
       const encodedData = encodeURIComponent(btoa(JSON.stringify(bookingData)));
@@ -351,6 +354,38 @@ export default function BookingWizard({ venue, user }: Props) {
               <div className={styles.summaryTotal}>
                 <span>Total Amount</span>
                 <span>₹{selectedExp?.price * durationHours}</span>
+              </div>
+              
+              <div style={{ marginTop: 24, paddingTop: 24, borderTop: "1px dashed var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>Host as Meetup</h3>
+                  <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: 0, maxWidth: "250px" }}>
+                    Make this session public so other racers in the community can join you!
+                  </p>
+                </div>
+                <div 
+                  onClick={() => setMakeMeetup(!makeMeetup)}
+                  style={{
+                    width: 44,
+                    height: 24,
+                    borderRadius: 12,
+                    backgroundColor: makeMeetup ? "var(--accent-primary)" : "var(--bg-secondary)",
+                    position: "relative",
+                    cursor: "pointer",
+                    transition: "background-color 0.2s"
+                  }}
+                >
+                  <div style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: "50%",
+                    backgroundColor: "white",
+                    position: "absolute",
+                    top: 2,
+                    left: makeMeetup ? 22 : 2,
+                    transition: "left 0.2s"
+                  }} />
+                </div>
               </div>
             </div>
           </div>

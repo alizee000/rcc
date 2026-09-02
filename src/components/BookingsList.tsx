@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useMutation } from "convex/react";
-import { Calendar, Clock, MapPin, QrCode, X, Check, UserPlus, MessageSquare } from "lucide-react";
+import { Calendar, Clock, MapPin, QrCode, X, Check, UserPlus, MessageSquare, Globe } from "lucide-react";
 import styles from "../app/bookings/page.module.css";
 import InviteToBookingModal from "./InviteToBookingModal";
 import BookingLobbyModal from "./BookingLobbyModal";
@@ -14,6 +14,9 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
   const [showPass, setShowPass] = useState<any>(null);
   const [inviteModalBookingId, setInviteModalBookingId] = useState<string | null>(null);
   const [lobbyModalBooking, setLobbyModalBooking] = useState<any>(null);
+  const [creatingMeetupFor, setCreatingMeetupFor] = useState<string | null>(null);
+
+  const createMeetup = useMutation(api.meetups.createMeetupFromBooking);
 
   const acceptInvite = useMutation(api.bookings.acceptBookingInvite);
   const declineInvite = useMutation(api.bookings.declineBookingInvite);
@@ -73,8 +76,70 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
               
               <div className={styles.header}>
                 <div className={styles.venueName}>{b.venue?.name || "Bengaluru RC Raceway"}</div>
-                <div className={`${styles.statusText} ${b.status === "CONFIRMED" ? styles.textConfirmed : styles.textPending}`}>
-                  {b.status}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <div 
+                      onClick={() => {
+                        if (b.venue?.lat && b.venue?.lng) {
+                          window.open(`https://www.google.com/maps/dir/?api=1&destination=${b.venue.lat},${b.venue.lng}`, "_blank");
+                        } else if (b.venue?.address) {
+                          window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(b.venue.address)}`, "_blank");
+                        } else {
+                          window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(b.venue?.name || "Bengaluru")}`, "_blank");
+                        }
+                      }}
+                      style={{ padding: "4px", backgroundColor: "var(--bg-secondary)", borderRadius: "50%", cursor: "pointer", color: "var(--text-secondary)", display: "flex", alignItems: "center", justifyContent: "center" }}
+                      title="Directions"
+                    >
+                      <MapPin size={12} />
+                    </div>
+                    <div className={`${styles.statusText} ${b.status === "CONFIRMED" ? styles.textConfirmed : styles.textPending}`}>
+                      {b.status}
+                    </div>
+                  </div>
+                  {b.userId === user.id && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{ fontSize: 10, fontWeight: 500, color: "var(--text-secondary)" }}>Meetup</span>
+                      <div 
+                        onClick={async () => {
+                          if (creatingMeetupFor === b.id) return;
+                          setCreatingMeetupFor(b.id);
+                          try {
+                            const res = await createMeetup({ bookingId: b.id });
+                            if (res.success) {
+                              alert("Successfully converted to Community Meetup!");
+                            } else {
+                              alert(res.message || "Meetup already exists.");
+                            }
+                          } catch (err) {
+                            alert("Failed to create meetup.");
+                          } finally {
+                            setCreatingMeetupFor(null);
+                          }
+                        }}
+                        style={{
+                          width: 24,
+                          height: 14,
+                          borderRadius: 7,
+                          backgroundColor: creatingMeetupFor === b.id ? "var(--accent-primary)" : "var(--bg-secondary)",
+                          position: "relative",
+                          cursor: "pointer",
+                          transition: "background-color 0.2s"
+                        }}
+                      >
+                        <div style={{
+                          width: 10,
+                          height: 10,
+                          borderRadius: "50%",
+                          backgroundColor: "white",
+                          position: "absolute",
+                          top: 2,
+                          left: creatingMeetupFor === b.id ? 12 : 2,
+                          transition: "left 0.2s"
+                        }} />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               
@@ -93,52 +158,36 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
                 </div>
               </div>
               
-              <div className={styles.actions}>
+              <div style={{ display: 'flex', gap: 6, marginTop: 16 }}>
                 <button 
                   className="btn-primary" 
-                  style={{ flex: 1, padding: "8px" }}
+                  style={{ flex: 1, padding: "6px 4px", display: "flex", justifyContent: "center", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 500, borderRadius: 6 }}
                   onClick={() => setShowPass(b)}
                 >
-                  <QrCode size={16} /> View Pass
+                  <QrCode size={12} /> View Pass
                 </button>
-                <button 
-                  className="btn-secondary" 
-                  style={{ flex: 1, padding: "8px" }}
-                  onClick={() => {
-                    if (b.venue?.lat && b.venue?.lng) {
-                      window.open(`https://www.google.com/maps/dir/?api=1&destination=${b.venue.lat},${b.venue.lng}`, "_blank");
-                    } else if (b.venue?.address) {
-                      window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(b.venue.address)}`, "_blank");
-                    } else {
-                      window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(b.venue?.name || "Bengaluru")}`, "_blank");
-                    }
-                  }}
-                >
-                  Directions
-                </button>
-              </div>
 
-              {/* Show Invite Racers button only if the current user owns this booking */}
-              {b.userId === user.id && (
-                <div style={{ marginTop: 12 }}>
-                  <div style={{ display: 'flex', gap: 8 }}>
+                {b.userId === user.id && (
+                  <>
                     <button 
                       className="btn-secondary" 
-                      style={{ flex: 1, padding: "8px", display: "flex", justifyContent: "center", alignItems: "center", gap: 8, borderColor: "var(--border)", color: "var(--text-secondary)" }}
+                      style={{ flex: 1, padding: "6px 4px", display: "flex", justifyContent: "center", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 500, borderRadius: 6, borderColor: "var(--border)", color: "var(--text-secondary)" }}
                       onClick={() => setInviteModalBookingId(b.id)}
                     >
-                      <UserPlus size={16} /> Invite Racers
+                      <UserPlus size={12} /> Invite Racers
                     </button>
                     <button 
-                      className="btn-primary" 
-                      style={{ flex: 1, padding: "8px", display: "flex", justifyContent: "center", alignItems: "center", gap: 8 }}
+                      className="btn-secondary" 
+                      style={{ flex: 1, padding: "6px 4px", display: "flex", justifyContent: "center", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 500, borderRadius: 6, borderColor: "var(--border)", color: "var(--text-primary)", backgroundColor: "rgba(255,42,42,0.05)" }}
                       onClick={() => setLobbyModalBooking(b)}
                     >
-                      <MessageSquare size={16} /> Enter Lobby
+                      <MessageSquare size={12} style={{ color: "var(--accent-primary)" }} /> Lobby
                     </button>
-                  </div>
+                  </>
+                )}
+              </div>
                   
-                  {b.sentInvites && b.sentInvites.length > 0 && (
+                  {b.userId === user.id && b.sentInvites && b.sentInvites.length > 0 && (
                     <div style={{ marginTop: 16, backgroundColor: 'rgba(255,255,255,0.02)', padding: 12, borderRadius: 12, border: '1px solid var(--border)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                         <h4 style={{ fontSize: 12, textTransform: 'uppercase', color: 'var(--text-secondary)', margin: 0 }}>Invited Racers ({b.sentInvites.length})</h4>
@@ -173,8 +222,6 @@ export default function BookingsList({ user, bookings = [], invites = [] }: { us
                       </div>
                     </div>
                   )}
-                </div>
-              )}
             </div>
           ))}
           {displayBookings.length === 0 && (
