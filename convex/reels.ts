@@ -132,3 +132,22 @@ export const addComment = mutation({
     return commentId;
   },
 });
+
+export const deleteAllReels = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const reels = await ctx.db.query("reels").collect();
+    for (const reel of reels) {
+      await ctx.db.delete(reel._id);
+    }
+    const likes = await ctx.db.query("reelLikes").collect();
+    for (const like of likes) {
+      await ctx.db.delete(like._id);
+    }
+    const comments = await ctx.db.query("reelComments").collect();
+    for (const comment of comments) {
+      await ctx.db.delete(comment._id);
+    }
+    return { deleted: reels.length };
+  }
+});

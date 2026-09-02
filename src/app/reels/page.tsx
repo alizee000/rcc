@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Heart, MessageCircle, Share2, Plus, Film } from "lucide-react";
+import { ArrowLeft, Heart, MessageCircle, Share2, Plus, Film, Volume2, VolumeX } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 // @ts-ignore
 import { api } from "../../../convex/_generated/api";
@@ -16,6 +16,7 @@ export default function ReelsPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUpload, setShowUpload] = useState(false);
   const [activeCommentsReel, setActiveCommentsReel] = useState<Id<"reels"> | null>(null);
+  const [isMuted, setIsMuted] = useState(true);
   const reels = useQuery(api.reels.getReels);
   const toggleLike = useMutation(api.reels.toggleLike);
 
@@ -78,9 +79,31 @@ export default function ReelsPage() {
                 src={reel.videoUrl}
                 className={styles.iframe}
                 loop
-                muted // Muted required for autoplay on most mobile browsers
+                muted={isMuted} // Muted required for autoplay on most mobile browsers
                 playsInline
+                onClick={() => setIsMuted(!isMuted)}
               />
+              
+              <button 
+                onClick={() => setIsMuted(!isMuted)}
+                style={{
+                  position: 'absolute',
+                  top: '80px',
+                  right: '16px',
+                  background: 'rgba(0,0,0,0.5)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  padding: '8px',
+                  color: 'white',
+                  zIndex: 10,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer'
+                }}
+              >
+                {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+              </button>
               
               <div className={styles.overlay}>
                 <div className={styles.overlayBottom}>
