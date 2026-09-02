@@ -46,7 +46,7 @@ export default function CommentsModal({ reelId, onClose }: CommentsModalProps) {
             comments.map(comment => (
               <div key={comment._id} className={styles.commentItem}>
                 <div className={styles.avatar}>
-                  <img src={comment.user.imageUrl} alt={comment.user.name} />
+                  <img src={comment.user.imageUrl || undefined} alt={comment.user.name} />
                 </div>
                 <div className={styles.commentContent}>
                   <span className={styles.userName}>{comment.user.name}</span>

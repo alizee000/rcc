@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MapPin, Bell, User, Search, Star, Clock, Navigation, PlaySquare } from 'lucide-react';
 import { useQuery } from "convex/react";
@@ -9,10 +9,41 @@ import { api } from "../../../convex/_generated/api";
 import NotificationBell from '../../components/NotificationBell';
 import styles from './page.module.css';
 
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371; // Radius of the earth in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2); 
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  return R * c; // Distance in km
+}
+
 export default function Home() {
   const venues = useQuery(api.venues.getVenues);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          // Default to a central point in Bengaluru if permission denied/error
+          setUserLocation({ lat: 12.9716, lng: 77.5946 });
+        }
+      );
+    }
+  }, []);
 
   const categories = [
     { name: 'All' },
@@ -115,13 +146,16 @@ export default function Home() {
           <div style={{ padding: 20, color: 'var(--text-secondary)' }}>No tracks found for this category.</div>
         ) : (
           filteredVenues.map((venue: any) => (
-            <Link href={`/venues/${venue.id}`} key={venue.id} className={styles.venueCard}>
-              <img src={venue.imageUrl || ''} alt={venue.name} className={styles.venueImg} />
+            <Link href={`/venues/${venue.id || venue._id}`} key={venue.id || venue._id} className={styles.venueCard}>
+              <img src={venue.imageUrl || undefined} alt={venue.name} className={styles.venueImg} />
               <div className={styles.venueInfo}>
                 <div className={styles.venueName}>{venue.name}</div>
                 <div className={styles.venueDetails}>
-                  <span><Star size={14} color="var(--warning)" /> {venue.rating}</span>
-                  <span><Navigation size={14} /> 5.2 km</span>
+                  <span>
+                    <Star size={14} color="var(--warning)" /> 
+                    {venue.rating > 0 ? venue.rating : "—"} {venue.reviewCount !== undefined && venue.rating > 0 ? `(${venue.reviewCount})` : ""}
+                  </span>
+                  <span><Navigation size={14} /> {userLocation && venue.lat && venue.lng ? calculateDistance(userLocation.lat, userLocation.lng, venue.lat, venue.lng).toFixed(1) + ' km' : '— km'}</span>
                   <span><MapPin size={14} /> {venue.city}</span>
                 </div>
                 <div className={styles.venueFooter}>

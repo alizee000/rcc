@@ -27,8 +27,10 @@ export default function VenueActions({ venueName, lat, lng }: Props) {
           text: `Check out ${venueName} on RC Rush!`,
           url: url,
         });
-      } catch (err) {
-        console.error("Share failed", err);
+      } catch (err: any) {
+        if (err.name !== 'AbortError' && !err.message?.includes('Share canceled')) {
+          console.error('Error sharing:', err);
+        }
       }
     } else {
       // Fallback to clipboard

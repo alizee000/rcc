@@ -60,11 +60,33 @@ export const getUserBookings = query({
       allBookings.map(async (b) => {
         const venue = await ctx.db.get(b.venueId as Id<"venues">);
         const experience = await ctx.db.get(b.experienceId as Id<"experiences">);
+        
+        // Fetch invites sent for this booking
+        const sentInvitesRaw = await ctx.db
+          .query("bookingInvites")
+          .withIndex("by_booking", (q) => q.eq("bookingId", b._id))
+          .collect();
+          
+        const sentInvites = await Promise.all(
+          sentInvitesRaw.map(async (inv) => {
+            const invitee = await ctx.db
+              .query("users")
+              .filter((q) => q.eq(q.field("clerkId"), inv.inviteeId))
+              .first();
+            return {
+              id: inv._id,
+              status: inv.status,
+              inviteeName: invitee ? invitee.name : "Unknown Racer",
+            };
+          })
+        );
+
         return {
           ...b,
           id: b._id,
           venue: venue ? { name: venue.name, imageUrl: venue.imageUrl } : null,
           experience: experience ? { name: experience.name } : null,
+          sentInvites,
         };
       })
     );
@@ -227,5 +249,44 @@ export const getUserBookingInvites = query({
         };
       })
     ).then(res => res.filter(r => r !== null));
+  },
+});
+export const getBookingMessages = query({
+  args: { bookingId: v.id("bookings") },
+  handler: async (ctx, args) => {
+    const messages = await ctx.db
+      .query("bookingMessages")
+      .withIndex("by_booking", (q) => q.eq("bookingId", args.bookingId))
+      .collect();
+
+    return await Promise.all(
+      messages.map(async (msg) => {
+        const user = await ctx.db
+          .query("users")
+          .filter((q) => q.eq(q.field("clerkId"), msg.userId))
+          .first();
+        return {
+          ...msg,
+          user: user ? { name: user.name } : { name: "A Racer" },
+        };
+      })
+    );
+  },
+});
+
+export const sendBookingMessage = mutation({
+  args: {
+    bookingId: v.id("bookings"),
+    userId: v.string(),
+    text: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("bookingMessages", {
+      bookingId: args.bookingId,
+      userId: args.userId,
+      text: args.text,
+      createdAt: Date.now(),
+    });
+    return { success: true };
   },
 });

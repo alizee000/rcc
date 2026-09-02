@@ -211,9 +211,8 @@
 }
 
 .expPrice {
-  font-size: 20px;
   font-weight: 700;
-  color: var(--success);
+  color: var(--accent-primary);
 }
 
 .ctaContainer {

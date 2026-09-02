@@ -265,7 +265,7 @@ export default function BookingWizard({ venue, user }: Props) {
                     </div>
                   )}
                   <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                    <img src={car.imageUrl} alt={car.name} style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 8 }} />
+                    <img src={car.imageUrl || undefined} alt={car.name} style={{ width: 60, height: 40, objectFit: "cover", borderRadius: 8 }} />
                     <div>
                       <div className={styles.cardTitle}>{car.name}</div>
                       <div className={styles.cardDesc}>{car.type} • {car.speed} Speed</div>

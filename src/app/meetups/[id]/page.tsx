@@ -55,7 +55,7 @@ export default async function MeetupDetail(props: { params: Promise<{ id: string
         <Link href="/meetups" className={styles.backBtn}>
           <ArrowLeft size={20} />
         </Link>
-        <img src={meetup.venue.imageUrl || ""} alt={meetup.venue.name} className={styles.heroImg} />
+        <img src={meetup.venue.imageUrl || undefined} alt={meetup.venue.name} className={styles.heroImg} />
       </header>
 
       <div className={styles.content}>
@@ -82,7 +82,7 @@ export default async function MeetupDetail(props: { params: Promise<{ id: string
           <div className={styles.detailRow}>
             <Calendar size={20} color="var(--accent-primary)" />
             <div>
-              <div style={{ fontWeight: 600 }}>{new Date(meetup.date).toLocaleDateString()}</div>
+              <div style={{ fontWeight: 600 }}><span suppressHydrationWarning>{new Date(meetup.date).toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span></div>
             </div>
           </div>
           <div className={styles.detailRow}>

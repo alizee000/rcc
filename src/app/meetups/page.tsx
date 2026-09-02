@@ -33,9 +33,9 @@ export default function MeetupsFeed() {
             
             return (
               <Link href={`/meetups/${meetup.id}`} key={meetup.id} className={styles.meetupCard}>
-                <div className={styles.cardHeader}>
-                  <img src={meetup.venue.imageUrl || ""} alt={meetup.venue.name} className={styles.cardImg} />
-                  <div className={styles.overlay} />
+                <div className={styles.cardImageContainer}>
+                  <img src={meetup.venue.imageUrl || undefined} alt={meetup.venue.name} className={styles.cardImg} />
+                  <div className={styles.cardStatus}>{meetup.players.length}/{meetup.maxPlayers} Racers</div>
                   <div className={styles.cardTitle}>{meetup.title}</div>
                 </div>
                 

@@ -54,7 +54,9 @@ export default function ReelsPage() {
           <ArrowLeft size={24} color="white" />
         </Link>
         <h1 className={styles.title}>RC Racing Reels</h1>
-        <div style={{ width: 40 }}></div>
+        <button onClick={() => setShowUpload(true)} className={styles.headerUploadBtn}>
+          <Plus size={24} color="white" />
+        </button>
       </header>
 
       {reels === undefined ? (
@@ -84,7 +86,7 @@ export default function ReelsPage() {
                 <div className={styles.overlayBottom}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                     <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: 'var(--bg-card)', overflow: 'hidden' }}>
-                      <img src={reel.user?.imageUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={reel.user?.imageUrl || undefined} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                     <span style={{ color: 'white', fontWeight: 600, fontSize: '14px', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
                       {reel.user?.name || "Driver"}
@@ -103,12 +105,19 @@ export default function ReelsPage() {
                     <MessageCircle size={28} color="white" />
                     <span>{reel.comments || 0}</span>
                   </button>
-                  <button className={styles.actionBtn} onClick={() => {
+                  <button className={styles.actionBtn} onClick={async () => {
                     if (navigator.share) {
-                      navigator.share({
-                        title: reel.title,
-                        url: window.location.href,
-                      }).catch(() => {});
+                      try {
+                        await navigator.share({
+                          title: reel.title,
+                          text: `Check out this RC reel by ${reel.user?.name || "Driver"}!`,
+                          url: window.location.href,
+                        });
+                      } catch (err: any) {
+                        if (err.name !== 'AbortError' && !err.message?.includes('Share canceled')) {
+                          console.error("Error sharing:", err);
+                        }
+                      }
                     }
                   }}>
                     <Share2 size={28} color="white" />

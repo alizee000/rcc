@@ -24,6 +24,7 @@ export default defineSchema({
     lng: v.number(),
     imageUrl: v.optional(v.string()),
     rating: v.number(),
+    reviewCount: v.optional(v.number()),
     categories: v.optional(v.array(v.string())),
     createdAt: v.number(),
   }),
@@ -47,6 +48,16 @@ export default defineSchema({
     ageSuitable: v.number(),
     status: v.string(), // "AVAILABLE", "BOOKED", "MAINTENANCE"
     imageUrl: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_venue", ["venueId"]),
+
+  reviews: defineTable({
+    venueId: v.id("venues"),
+    authorName: v.string(),
+    rating: v.number(),
+    text: v.string(),
+    timeFormatted: v.string(), // e.g. "2 months ago"
+    profilePhotoUrl: v.optional(v.string()),
     createdAt: v.number(),
   }).index("by_venue", ["venueId"]),
 
@@ -181,4 +192,11 @@ export default defineSchema({
     text: v.string(),
     createdAt: v.number(),
   }).index("by_reel", ["reelId"]),
+
+  bookingMessages: defineTable({
+    bookingId: v.id("bookings"),
+    userId: v.string(),
+    text: v.string(),
+    createdAt: v.number(),
+  }).index("by_booking", ["bookingId"]),
 });

@@ -33,7 +33,7 @@ export default async function VenueDetail(props: { params: Promise<{ id: string 
         <Link href="/home" className={styles.backBtn}>
           <ArrowLeft size={20} />
         </Link>
-        <img src={venue.imageUrl || ""} alt={venue.name} className={styles.heroImg} />
+        <img src={venue.imageUrl || undefined} alt={venue.name} className={styles.heroImg} />
       </div>
 
       <div className={styles.content}>
@@ -41,7 +41,7 @@ export default async function VenueDetail(props: { params: Promise<{ id: string 
           <div>
             <h1 className={styles.title}>{venue.name}</h1>
             <div className={styles.rating}>
-              <Star size={16} fill="currentColor" /> {venue.rating} (124 reviews)
+              <Star size={16} fill="currentColor" /> {venue.rating > 0 ? venue.rating : "—"} {venue.reviewCount !== undefined && venue.rating > 0 ? `(${venue.reviewCount} reviews)` : ""}
             </div>
           </div>
         </div>
@@ -60,7 +60,7 @@ export default async function VenueDetail(props: { params: Promise<{ id: string 
           <div className={styles.horizontalList}>
             {venue.cars.map((car) => (
               <div key={car.id} className={styles.carCard}>
-                <img src={car.imageUrl || ""} alt={car.name} className={styles.carImg} />
+                <img src={car.imageUrl || undefined} alt={car.name} className={styles.carImg} />
                 <div className={styles.carInfo}>
                   <div className={styles.carName}>{car.name}</div>
                   <div className={styles.carType}>{car.type}</div>
@@ -92,7 +92,6 @@ export default async function VenueDetail(props: { params: Promise<{ id: string 
           </div>
         </div>
       </div>
-
     </div>
   );
 }

@@ -93,7 +93,7 @@ export default function ExploreView({ venues }: { venues: any[] }) {
             filteredVenues.map((venue) => (
               <div key={venue.id} className={styles.venueCard}>
                 <Link href={`/venues/${venue.id}`} style={{ display: "block", cursor: "pointer" }}>
-                  <img src={venue.imageUrl} alt={venue.name} className={styles.venueImg} />
+                  <img src={venue.imageUrl || undefined} alt={venue.name} className={styles.venueImg} />
                 </Link>
                 
                 <div className={styles.venueInfo}>
