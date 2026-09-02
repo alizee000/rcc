@@ -6,8 +6,9 @@ import { redirect, useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { Suspense } from "react";
 
-export default function LandingPage() {
+function LandingPageContent() {
   const { userId } = useAuth();
   if (userId) {
     redirect("/home");
@@ -55,5 +56,13 @@ export default function LandingPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function LandingPage() {
+  return (
+    <Suspense fallback={<div style={{ width: '100vw', height: '100vh', backgroundColor: '#000' }} />}>
+      <LandingPageContent />
+    </Suspense>
   );
 }
